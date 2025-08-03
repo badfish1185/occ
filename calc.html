@@ -986,10 +986,12 @@
             norm(installation[programKey]) === 'eligible';
 
           // 3b. Check family eligibility.
-          // It's eligible if at least one of the matching family rules says it is.
-          const isEligibleForFamily = matchingFamilyRules.some(
-            (rule) => rule[programKey] && norm(rule[programKey]) === 'eligible'
-          );
+          // If there are no specific family rules, treat the program as open to all.
+          const isEligibleForFamily =
+            matchingFamilyRules.length === 0 ||
+            matchingFamilyRules.some(
+              (rule) => rule[programKey] && norm(rule[programKey]) === 'eligible'
+            );
 
           // The final eligibility is a combination of both installation and family checks.
           return {
