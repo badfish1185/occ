@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Child Care Eligibility Calculator | OCC Project</title>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <!--
     This site re-creates the functionality of the Operation Child Care Project
     calculator while adopting the look and feel of the OCC Project theme. It
@@ -45,16 +46,21 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Open Sans', sans-serif;
       background: var(--background);
       color: var(--text);
       line-height: 1.6;
       font-size: 16px;
     }
 
-    header {
-      background: var(--primary-color);
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Merriweather', serif;
       color: var(--secondary-color);
+    }
+
+    header {
+      background: var(--secondary-color);
+      color: var(--white);
       position: sticky;
       top: 0;
       z-index: 1000;
@@ -73,11 +79,21 @@
     header .page-title {
       font-size: 1.25rem;
       font-weight: bold;
-      color: var(--secondary-color);
+      color: var(--white);
     }
 
     .desktop-nav {
       display: none; /* Hidden by default, shown on larger screens */
+    }
+
+    .desktop-nav a {
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .desktop-nav a:hover {
+      color: var(--primary-color);
     }
 
     /* Mobile menu toggle button */
@@ -86,7 +102,7 @@
       font-size: 1.8rem;
       background: none;
       border: none;
-      color: var(--secondary-color);
+      color: var(--white);
       cursor: pointer;
     }
 
