@@ -37,13 +37,17 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+<body class="bg-occp-light-blue min-h-screen flex flex-col">
+    <header class="bg-occp-blue text-white py-6 shadow-md">
+        <h1 class="text-center font-heading text-3xl md:text-4xl">The Operation Child Care Project</h1>
+        <p class="text-center text-lg md:text-xl mt-1">Eligibility Calculator</p>
+    </header>
 
     <!-- Eligibility Calculator Section -->
-    <main class="w-full max-w-4xl mx-auto">
-        <div class="bg-white p-6 sm:p-8 md:p-12 rounded-2xl shadow-2xl">
+    <main class="flex-grow w-full max-w-4xl mx-auto p-4 flex items-start justify-center">
+        <div class="bg-white p-6 sm:p-8 md:p-12 rounded-2xl shadow-2xl w-full">
             <div class="text-center mb-10">
-                <h1 class="text-3xl md:text-4xl font-bold text-occp-blue">Eligibility Calculator</h1>
+                <h2 class="text-2xl md:text-3xl font-bold text-occp-blue">Get Started</h2>
                 <p class="text-gray-600 mt-4 max-w-2xl mx-auto">Use our calculator to see which child care assistance programs you may be eligible for. This is an estimate and not a guarantee of assistance.</p>
             </div>
             <form id="eligibility-form" class="space-y-8">
@@ -56,37 +60,37 @@
                 </div>
 
                 <!-- Step 2: Military Family Type -->
-                <div id="step-2" class="hidden">
+                <div id="step-2">
                     <label for="family-type" class="font-heading block text-xl font-semibold text-gray-800 mb-2">2. Select Your Military Family Type</label>
-                    <select id="family-type" name="family-type" class="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-occp-blue text-lg">
+                    <select id="family-type" name="family-type" disabled class="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-occp-blue text-lg">
                          <option value="">-- Select a Family Type --</option>
                     </select>
                 </div>
 
                 <!-- Step 3: Sub Family Type -->
-                <div id="step-3" class="hidden">
+                <div id="step-3">
                     <label for="sub-family-type" class="font-heading block text-xl font-semibold text-gray-800 mb-2">3. Select Your Specific Family Situation</label>
-                    <select id="sub-family-type" name="sub-family-type" class="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-occp-blue text-lg">
+                    <select id="sub-family-type" name="sub-family-type" disabled class="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-occp-blue text-lg">
                          <option value="">-- Select a Situation --</option>
                     </select>
                 </div>
-                
+
                 <!-- Step 4: School Age Children -->
-                <div id="step-4" class="hidden">
+                <div id="step-4">
                     <label class="font-heading block text-xl font-semibold text-gray-800 mb-2">4. Do you have school-age children (Ages 5-12)?</label>
                     <div class="flex items-center space-x-6 mt-2">
-                       <label class="flex items-center text-lg"><input type="radio" name="school-age" value="Yes" class="h-5 w-5 text-occp-blue focus:ring-occp-blue border-gray-300"> <span class="ml-2">Yes</span></label>
-                       <label class="flex items-center text-lg"><input type="radio" name="school-age" value="No" class="h-5 w-5 text-occp-blue focus:ring-occp-blue border-gray-300"> <span class="ml-2">No</span></label>
+                       <label class="flex items-center text-lg"><input type="radio" name="school-age" value="Yes" disabled class="h-5 w-5 text-occp-blue focus:ring-occp-blue border-gray-300"> <span class="ml-2">Yes</span></label>
+                       <label class="flex items-center text-lg"><input type="radio" name="school-age" value="No" disabled class="h-5 w-5 text-occp-blue focus:ring-occp-blue border-gray-300"> <span class="ml-2">No</span></label>
                     </div>
                 </div>
 
                 <div class="text-center pt-4">
-                    <button type="submit" id="calculate-btn" class="font-heading bg-occp-blue text-white py-4 px-10 rounded-full text-xl font-bold hover:bg-opacity-90 transition duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>Calculate Eligibility</button>
+                    <button type="submit" id="calculate-btn" class="font-heading bg-occp-green text-occp-blue py-4 px-10 rounded-full text-xl font-bold hover:bg-opacity-90 transition duration-300 disabled:bg-gray-400 disabled:text-white disabled:cursor-not-allowed" disabled>Calculate Eligibility</button>
                 </div>
             </form>
             <div id="eligibility-result" class="mt-12" role="alert"></div>
         </div>
-        <div class="text-center mt-6">
+        <div class="text-center mt-6 w-full">
             <p class="text-xs text-gray-500">&copy; 2025 The Operation Child Care Project. All Rights Reserved.</p>
         </div>
     </main>
@@ -286,50 +290,52 @@
             // Form step logic
             installationSelect.addEventListener('change', () => {
                 if (installationSelect.value) {
-                    document.getElementById('step-2').classList.remove('hidden');
+                    familyTypeSelect.disabled = false;
+                    familyTypeSelect.classList.remove('bg-gray-100');
                 } else {
-                    document.getElementById('step-2').classList.add('hidden');
+                    familyTypeSelect.disabled = true;
+                    familyTypeSelect.classList.add('bg-gray-100');
                 }
-                // Hide subsequent steps when changing a previous one
-                document.getElementById('step-3').classList.add('hidden');
-                document.getElementById('step-4').classList.add('hidden');
                 subFamilyTypeSelect.innerHTML = '<option value="">-- Select a Situation --</option>';
-                Array.from(schoolAgeRadios).forEach(r => r.checked = false);
+                subFamilyTypeSelect.disabled = true;
+                subFamilyTypeSelect.classList.add('bg-gray-100');
+                Array.from(schoolAgeRadios).forEach(r => { r.checked = false; r.disabled = true; });
                 checkFormCompletion();
             });
 
             familyTypeSelect.addEventListener('change', () => {
                 const selectedFamilyType = familyTypeSelect.value;
                 subFamilyTypeSelect.innerHTML = '<option value="">-- Select a Situation --</option>';
-                
+
                 if (selectedFamilyType) {
                     const relevantSubTypes = subFamilyTypes.filter(st => st.Family_Type === selectedFamilyType);
-                    if(relevantSubTypes.length > 0) {
+                    if (relevantSubTypes.length > 0) {
                         relevantSubTypes.forEach(st => {
                             const option = document.createElement('option');
                             option.value = st.Priority_Type;
                             option.textContent = st.Priority_Type;
                             subFamilyTypeSelect.appendChild(option);
                         });
-                        document.getElementById('step-3').classList.remove('hidden');
+                        subFamilyTypeSelect.disabled = false;
+                        subFamilyTypeSelect.classList.remove('bg-gray-100');
                     } else {
-                        document.getElementById('step-3').classList.add('hidden');
+                        subFamilyTypeSelect.disabled = true;
+                        subFamilyTypeSelect.classList.add('bg-gray-100');
                     }
                 } else {
-                     document.getElementById('step-3').classList.add('hidden');
+                    subFamilyTypeSelect.disabled = true;
+                    subFamilyTypeSelect.classList.add('bg-gray-100');
                 }
-                document.getElementById('step-4').classList.add('hidden');
-                Array.from(schoolAgeRadios).forEach(r => r.checked = false);
+                Array.from(schoolAgeRadios).forEach(r => { r.checked = false; r.disabled = true; });
                 checkFormCompletion();
             });
 
             subFamilyTypeSelect.addEventListener('change', () => {
-                 if (subFamilyTypeSelect.value) {
-                    document.getElementById('step-4').classList.remove('hidden');
+                if (subFamilyTypeSelect.value) {
+                    Array.from(schoolAgeRadios).forEach(r => r.disabled = false);
                 } else {
-                    document.getElementById('step-4').classList.add('hidden');
+                    Array.from(schoolAgeRadios).forEach(r => { r.checked = false; r.disabled = true; });
                 }
-                Array.from(schoolAgeRadios).forEach(r => r.checked = false);
                 checkFormCompletion();
             });
             
