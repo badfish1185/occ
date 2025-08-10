@@ -1,449 +1,527 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Operation Child Care Project - Eligibility Calculator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
-    <script>
-        // Customizing Tailwind theme to match occproject.org
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'occp-blue': '#003366', // Primary Blue
-                        'occp-green': '#99cc33', // Accent Green
-                        'occp-light-blue': '#e6f0ff', // Lighter blue for backgrounds
-                        'occp-medium-blue': '#b3d1ff', // For borders
-                    },
-                    fontFamily: {
-                        'sans': ['Lato', 'sans-serif'],
-                        'heading': ['Montserrat', 'sans-serif'],
-                    }
-                }
-            }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Operation Child Care Project - Eligibility Calculator</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+
+  <script>
+    // Tailwind theme customization tuned to match the OCCP site palette
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'occp-blue': '#003366',
+            'occp-green': '#99cc33',
+            'occp-light-blue': '#e6f0ff',
+            'occp-medium-blue': '#b3d1ff',
+            'occp-accent': '#f2f7fb'
+          },
+          fontFamily: {
+            'sans': ['Lato', 'sans-serif'],
+            'heading': ['Montserrat', 'sans-serif'],
+          },
         }
-    </script>
-    <style>
-        /* Applying custom fonts */
-        body {
-            font-family: 'Lato', sans-serif;
-        }
-        h1, h2, h3, h4, h5, h6 {
-            font-family: 'Montserrat', sans-serif;
-        }
-    </style>
+      }
+    }
+  </script>
+
+  <style>
+    html, body { height: 100%; }
+    body {
+      font-family: 'Lato', sans-serif;
+      background: linear-gradient(180deg, #f8fbff 0%, #e6f0ff 100%);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    h1,h2,h3 { font-family: 'Montserrat', sans-serif; }
+    /* Small visual touch for the numeric step badges */
+    .step-badge { width: 38px; height: 38px; line-height: 38px; border-radius: 9999px; }
+    /* Make links open clearly on mobile */
+    a[target="_blank"] { text-decoration-skip-ink: auto; }
+  </style>
 </head>
-<body class="bg-occp-light-blue min-h-screen flex flex-col">
-    <header class="bg-occp-blue text-white py-6 shadow-md">
-        <h1 class="text-center font-heading text-3xl md:text-4xl">The Operation Child Care Project</h1>
-        <p class="text-center text-lg md:text-xl mt-1">Eligibility Calculator</p>
-    </header>
+<body class="min-h-screen flex flex-col">
 
-    <!-- Eligibility Calculator Section -->
-    <main class="flex-grow w-full max-w-4xl mx-auto p-4 flex items-start justify-center">
-        <div class="bg-white p-6 sm:p-8 md:p-12 rounded-2xl shadow-2xl w-full">
-            <div class="text-center mb-10">
-                <h2 class="text-2xl md:text-3xl font-bold text-occp-blue">Get Started</h2>
-                <p class="text-gray-600 mt-4 max-w-2xl mx-auto">Use our calculator to see which child care assistance programs you may be eligible for. This is an estimate and not a guarantee of assistance.</p>
+  <!-- Header -->
+  <header class="bg-white shadow sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between py-4">
+        <div class="flex items-center space-x-4">
+          <div class="rounded-full bg-occp-blue w-12 h-12 flex items-center justify-center text-white font-bold text-lg">OC</div>
+          <div>
+            <h1 class="text-occp-blue text-lg sm:text-xl font-heading font-semibold">The Operation Child Care Project</h1>
+            <p class="text-sm text-gray-500">Eligibility Calculator</p>
+          </div>
+        </div>
+
+        <nav class="hidden md:flex items-center space-x-4">
+          <a href="https://theoperationchildcareproject.org/" target="_blank" class="text-sm font-medium text-occp-blue hover:underline">occproject.org</a>
+          <a href="https://www.occproject.org/" target="_blank" class="text-sm font-medium text-gray-600 hover:underline">About OCCP</a>
+        </nav>
+
+        <div class="md:hidden text-sm text-gray-500">Mobile</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main content: vertical, centered, mobile-first -->
+  <main class="flex-grow w-full">
+    <div class="max-w-3xl mx-auto px-4 py-8">
+
+      <!-- Intro / Hero -->
+      <section class="bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-6 border border-occp-medium-blue">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 class="text-2xl sm:text-3xl text-occp-blue font-heading font-bold">Find Programs You May Qualify For</h2>
+            <p class="mt-2 text-gray-600">This quick calculator provides an estimate of program eligibility for DoD-affiliated families. It is for informational purposes only.</p>
+          </div>
+          <div class="text-sm text-gray-500">
+            <p class="font-medium">Need help? <a href="https://www.occproject.org/" target="_blank" class="text-occp-blue hover:underline">Contact OCCP</a></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Card: Form -->
+      <section class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 mb-6 border border-occp-medium-blue">
+        <form id="eligibility-form" class="space-y-6" aria-labelledby="form-heading">
+          <h3 id="form-heading" class="text-2xl font-heading font-bold text-occp-blue">Eligibility Steps</h3>
+
+          <!-- Step 1: Installation -->
+          <div class="flex items-start gap-4">
+            <div class="step-badge bg-occp-light-blue text-occp-blue flex items-center justify-center font-semibold">1</div>
+            <div class="flex-1">
+              <label for="installation" class="block text-sm font-medium text-gray-700 mb-2">Select your installation</label>
+              <select id="installation" name="installation" class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base focus:ring-2 focus:ring-occp-blue focus:outline-none">
+                <option value="">-- Select an Installation --</option>
+              </select>
             </div>
-            <form id="eligibility-form" class="space-y-8">
-                <!-- Step 1: Installation -->
-                <div id="step-1">
-                    <label for="installation" class="font-heading block text-xl font-semibold text-gray-800 mb-2">1. Select Your Installation</label>
-                    <select id="installation" name="installation" class="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-occp-blue text-lg">
-                        <option value="">-- Select an Installation --</option>
-                    </select>
+          </div>
+
+          <!-- Step 2: Family Type -->
+          <div class="flex items-start gap-4">
+            <div class="step-badge bg-occp-light-blue text-occp-blue flex items-center justify-center font-semibold">2</div>
+            <div class="flex-1">
+              <label for="family-type" class="block text-sm font-medium text-gray-700 mb-2">Select your military family type</label>
+              <select id="family-type" name="family-type" disabled class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-base focus:ring-2 focus:ring-occp-blue focus:outline-none">
+                <option value="">-- Select a Family Type --</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Step 3: Sub Family Type -->
+          <div class="flex items-start gap-4">
+            <div class="step-badge bg-occp-light-blue text-occp-blue flex items-center justify-center font-semibold">3</div>
+            <div class="flex-1">
+              <label for="sub-family-type" class="block text-sm font-medium text-gray-700 mb-2">Select your specific family situation</label>
+              <select id="sub-family-type" name="sub-family-type" disabled class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-base focus:ring-2 focus:ring-occp-blue focus:outline-none">
+                <option value="">-- Select a Situation --</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Step 4: School Age -->
+          <div class="flex items-start gap-4">
+            <div class="step-badge bg-occp-light-blue text-occp-blue flex items-center justify-center font-semibold">4</div>
+            <div class="flex-1">
+              <fieldset>
+                <legend class="block text-sm font-medium text-gray-700 mb-2">Do you have school-age children (Ages 5–12)?</legend>
+                <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                  <label class="inline-flex items-center">
+                    <input type="radio" name="school-age" value="Yes" disabled class="h-5 w-5 text-occp-blue focus:ring-occp-blue border-gray-300">
+                    <span class="ml-2 text-gray-700">Yes</span>
+                  </label>
+                  <label class="inline-flex items-center">
+                    <input type="radio" name="school-age" value="No" disabled class="h-5 w-5 text-occp-blue focus:ring-occp-blue border-gray-300">
+                    <span class="ml-2 text-gray-700">No</span>
+                  </label>
                 </div>
+              </fieldset>
+            </div>
+          </div>
 
-                <!-- Step 2: Military Family Type -->
-                <div id="step-2">
-                    <label for="family-type" class="font-heading block text-xl font-semibold text-gray-800 mb-2">2. Select Your Military Family Type</label>
-                    <select id="family-type" name="family-type" disabled class="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-occp-blue text-lg">
-                         <option value="">-- Select a Family Type --</option>
-                    </select>
-                </div>
+          <!-- CTA -->
+          <div class="pt-2">
+            <button type="submit" id="calculate-btn" disabled class="w-full inline-flex items-center justify-center gap-3 rounded-full bg-occp-green text-occp-blue px-6 py-4 font-heading font-bold text-lg shadow hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed transition">
+              Calculate Eligibility
+            </button>
+          </div>
+        </form>
+      </section>
 
-                <!-- Step 3: Sub Family Type -->
-                <div id="step-3">
-                    <label for="sub-family-type" class="font-heading block text-xl font-semibold text-gray-800 mb-2">3. Select Your Specific Family Situation</label>
-                    <select id="sub-family-type" name="sub-family-type" disabled class="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-occp-blue text-lg">
-                         <option value="">-- Select a Situation --</option>
-                    </select>
-                </div>
+      <!-- Results -->
+      <section id="eligibility-result" class="min-h-[120px]"></section>
 
-                <!-- Step 4: School Age Children -->
-                <div id="step-4">
-                    <label class="font-heading block text-xl font-semibold text-gray-800 mb-2">4. Do you have school-age children (Ages 5-12)?</label>
-                    <div class="flex items-center space-x-6 mt-2">
-                       <label class="flex items-center text-lg"><input type="radio" name="school-age" value="Yes" disabled class="h-5 w-5 text-occp-blue focus:ring-occp-blue border-gray-300"> <span class="ml-2">Yes</span></label>
-                       <label class="flex items-center text-lg"><input type="radio" name="school-age" value="No" disabled class="h-5 w-5 text-occp-blue focus:ring-occp-blue border-gray-300"> <span class="ml-2">No</span></label>
-                    </div>
-                </div>
+      <!-- Footer (small) -->
+      <footer class="mt-8 text-center text-xs text-gray-500">
+        <p>&copy; 2025 The Operation Child Care Project. All rights reserved.</p>
+      </footer>
+    </div>
+  </main>
 
-                <div class="text-center pt-4">
-                    <button type="submit" id="calculate-btn" class="font-heading bg-occp-green text-occp-blue py-4 px-10 rounded-full text-xl font-bold hover:bg-opacity-90 transition duration-300 disabled:bg-gray-400 disabled:text-white disabled:cursor-not-allowed" disabled>Calculate Eligibility</button>
-                </div>
-            </form>
-            <div id="eligibility-result" class="mt-12" role="alert"></div>
-        </div>
-        <div class="text-center mt-6 w-full">
-            <p class="text-xs text-gray-500">&copy; 2025 The Operation Child Care Project. All Rights Reserved.</p>
-        </div>
-    </main>
+  <!-- Scripts & Data (kept intact, but the UI classes above are updated) -->
+  <script>
+    // --- DATA FROM SPREADSHEETS ---
+    // This data is now the full dataset from the provided files.
+    // In a real-world application, this would likely be loaded from a database or API.
 
-    <script>
-        // --- DATA FROM SPREADSHEETS ---
-        // This data is now the full dataset from the provided files.
-        // In a real-world application, this would likely be loaded from a database or API.
+    const installationsData = [
+        // This is a large dataset. For brevity in this example, only a portion is shown.
+        // In the actual implementation, all 700+ installations are included.
+        {"Installation":"117th Air Refueling Wing","State":"Alabama","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"Installation":"187th Fighter Wing","State":"Alabama","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"Installation":"Anniston Army Depot","State":"Alabama","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"Installation":"Fort Novosel","State":"Alabama","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"Installation":"Fort Rucker","State":"Alabama","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"Installation":"Maxwell Air Force Base and Gunter Annex","State":"Alabama","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"Installation":"Redstone Arsenal","State":"Alabama","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"Installation":"US Coast Guard Aviation Training Center Mobile","State":"Alabama","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"Installation":"US Coast Guard Sector Mobile","State":"Alabama","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"Installation":"168th Air Wing","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"Installation":"176th WG","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"Installation":"Clear Space Force Station","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"Installation":"Eielson Air Force Base","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"Installation":"Fort Greely","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"Installation":"Fort Wainwright","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"Installation":"Joint Base Elmendorf-Richardson","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"Installation":"US Coast Guard Air Station Kodiak","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"Installation":"US Coast Guard Air Station Sitka","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"Installation":"US Coast Guard Base Ketchikan","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"Installation":"US Coast Guard Base Kodiak","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"Installation":"Davis-Monthan Air Force Base","State":"Arizona","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"Installation":"Fort Huachuca","State":"Arizona","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"Installation":"Luke Air Force Base","State":"Arizona","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"Installation":"Marine Corps Air Station Yuma","State":"Arizona","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"Installation":"Yuma Proving Ground","State":"Arizona","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"}
+        // ... and so on for all 700+ installations
+    ];
 
-        const installationsData = [
-            // This is a large dataset. For brevity in this example, only a portion is shown.
-            // In the actual implementation, all 700+ installations are included.
-            {"Installation":"117th Air Refueling Wing","State":"Alabama","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"Installation":"187th Fighter Wing","State":"Alabama","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"Installation":"Anniston Army Depot","State":"Alabama","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"Installation":"Fort Novosel","State":"Alabama","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"Installation":"Fort Rucker","State":"Alabama","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"Installation":"Maxwell Air Force Base and Gunter Annex","State":"Alabama","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"Installation":"Redstone Arsenal","State":"Alabama","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"Installation":"US Coast Guard Aviation Training Center Mobile","State":"Alabama","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"Installation":"US Coast Guard Sector Mobile","State":"Alabama","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"Installation":"168th Air Wing","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"Installation":"176th WG","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"Installation":"Clear Space Force Station","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"Installation":"Eielson Air Force Base","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"Installation":"Fort Greely","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"Installation":"Fort Wainwright","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"Installation":"Joint Base Elmendorf-Richardson","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"Installation":"US Coast Guard Air Station Kodiak","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"Installation":"US Coast Guard Air Station Sitka","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"Installation":"US Coast Guard Base Ketchikan","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"Installation":"US Coast Guard Base Kodiak","State":"Alaska","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"Installation":"Davis-Monthan Air Force Base","State":"Arizona","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"Installation":"Fort Huachuca","State":"Arizona","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"Installation":"Luke Air Force Base","State":"Arizona","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"Installation":"Marine Corps Air Station Yuma","State":"Arizona","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"Installation":"Yuma Proving Ground","State":"Arizona","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"}
-            // ... and so on for all 700+ installations
-        ];
+    const masterFamilyTypes = [ "CDC Program Staff", "Active Duty Combat Wounded Warrior", "Active Duty Military", "Guard On Active Duty", "Reserves On Active Duty", "DoD Civilian", "Coast Guard Civilian", "DoD Contractor", "Gold Star Spouse (Combat Related)", "Other Eligible" ];
+    
+    const subFamilyTypes = [
+        { "Family_Type": "CDC Program Staff", "Priority_Type": "Single CDC Program Staff" },
+        { "Family_Type": "CDC Program Staff", "Priority_Type": "With Working Spouse" },
+        { "Family_Type": "CDC Program Staff", "Priority_Type": "With Student Spouse" },
+        { "Family_Type": "CDC Program Staff", "Priority_Type": "With Spouse Seeking Employment" },
+        { "Family_Type": "CDC Program Staff", "Priority_Type": "With Non-Working Spouse" },
+        { "Family_Type": "Active Duty Combat Wounded Warrior", "Priority_Type": "Active Duty Combat Wounded Warrior" },
+        { "Family_Type": "Active Duty Military", "Priority_Type": "Dual Active Duty Military" },
+        { "Family_Type": "Active Duty Military", "Priority_Type": "Single Active Duty Military" },
+        { "Family_Type": "Active Duty Military", "Priority_Type": "With Full-Time Working Spouse" },
+        { "Family_Type": "Active Duty Military", "Priority_Type": "With Part-Time Working Spouse" },
+        { "Family_Type": "Active Duty Military", "Priority_Type": "With Spouse Seeking Employment" },
+        { "Family_Type": "Active Duty Military", "Priority_Type": "With Full-Time Student Spouse" },
+        { "Family_Type": "Active Duty Military", "Priority_Type": "With Part-Time Student Spouse" },
+        { "Family_Type": "Active Duty Military", "Priority_Type": "With Non-Working Spouse" },
+        { "Family_Type": "Guard On Active Duty", "Priority_Type": "Dual Guard and Reserve on Active Duty" },
+        { "Family_Type": "Guard On Active Duty", "Priority_Type": "Single Guard and Reserve on Active Duty" },
+        { "Family_Type": "Guard On Active Duty", "Priority_Type": "With Full-Time Working Spouse" },
+        { "Family_Type": "Guard On Active Duty", "Priority_Type": "With Part-Time Working Spouse" },
+        { "Family_Type": "Guard On Active Duty", "Priority_Type": "With Spouse Seeking Employment" },
+        { "Family_Type": "Guard On Active Duty", "Priority_Type": "With Full-Time Student Spouse" },
+        { "Family_Type": "Guard On Active Duty", "Priority_Type": "With Part-Time Student Spouse" },
+        { "Family_Type": "Guard On Active Duty", "Priority_Type": "With Non-Working Spouse" },
+        { "Family_Type": "Reserves On Active Duty", "Priority_Type": "Dual Guard and Reserve on Active Duty" },
+        { "Family_Type": "Reserves On Active Duty", "Priority_Type": "Single Guard and Reserve on Active Duty" },
+        { "Family_Type": "Reserves On Active Duty", "Priority_Type": "With Full-Time Working Spouse" },
+        { "Family_Type": "Reserves On Active Duty", "Priority_Type": "With Part-Time Working Spouse" },
+        { "Family_Type": "Reserves On Active Duty", "Priority_Type": "With Spouse Seeking Employment" },
+        { "Family_Type": "Reserves On Active Duty", "Priority_Type": "With Full-Time Student Spouse" },
+        { "Family_Type": "Reserves On Active Duty", "Priority_Type": "With Part-Time Student Spouse" },
+        { "Family_Type": "Reserves On Active Duty", "Priority_Type": "With Non-Working Spouse" },
+        { "Family_Type": "DoD Civilian", "Priority_Type": "Dual DoD Civilian/Coast Guard Civilian" },
+        { "Family_Type": "DoD Civilian", "Priority_Type": "Single DoD Civilian/Coast Guard Civilian" },
+        { "Family_Type": "DoD Civilian", "Priority_Type": "With Full-Time Working Spouse" },
+        { "Family_Type": "DoD Civilian", "Priority_Type": "With Part-Time Working Spouse" },
+        { "Family_Type": "DoD Civilian", "Priority_Type": "DoD Civilian w/Spouse Seeking Employment" },
+        { "Family_Type": "DoD Civilian", "Priority_Type": "With Full-Time Student Spouse" },
+        { "Family_Type": "DoD Civilian", "Priority_Type": "With Part-Time Student Spouse" },
+        { "Family_Type": "DoD Civilian", "Priority_Type": "With Non-Working Spouse" },
+        { "Family_Type": "Coast Guard Civilian", "Priority_Type": "Dual DoD Civilian/Coast Guard Civilian" },
+        { "Family_Type": "Coast Guard Civilian", "Priority_Type": "Single DoD Civilian/Coast Guard Civilian" },
+        { "Family_Type": "Coast Guard Civilian", "Priority_Type": "With Full-Time Working Spouse" },
+        { "Family_Type": "Coast Guard Civilian", "Priority_Type": "With Part-Time Working Spouse" },
+        { "Family_Type": "Coast Guard Civilian", "Priority_Type": "DoD Civilian w/Spouse Seeking Employment" },
+        { "Family_Type": "Coast Guard Civilian", "Priority_Type": "With Full-Time Student Spouse" },
+        { "Family_Type": "Coast Guard Civilian", "Priority_Type": "With Part-Time Student Spouse" },
+        { "Family_Type": "Coast Guard Civilian", "Priority_Type": "With Non-Working Spouse" },
+        { "Family_Type": "DoD Contractor", "Priority_Type": "Dual DoD Contractor" },
+        { "Family_Type": "DoD Contractor", "Priority_Type": "Single DoD Contractor" },
+        { "Family_Type": "DoD Contractor", "Priority_Type": "With Full-Time Working Spouse" },
+        { "Family_Type": "DoD Contractor", "Priority_Type": "With Part-Time Working Spouse" },
+        { "Family_Type": "DoD Contractor", "Priority_Type": "With Spouse Seeking Employment" },
+        { "Family_Type": "DoD Contractor", "Priority_Type": "With Full-Time Student Spouse" },
+        { "Family_Type": "DoD Contractor", "Priority_Type": "With Non-Working Spouse" },
+        { "Family_Type": "Gold Star Spouse (Combat Related)", "Priority_Type": "Gold Star Spouse (Combat Related)-Working" },
+        { "Family_Type": "Gold Star Spouse (Combat Related)", "Priority_Type": "Gold Star Spouse (Combat Related)-Student" },
+        { "Family_Type": "Gold Star Spouse (Combat Related)", "Priority_Type": "Gold Star Spouse (Combat Related)-Seeking Employment" },
+        { "Family_Type": "Gold Star Spouse (Combat Related)", "Priority_Type": "Gold Star Spouse (Combat Related)-Non-working" },
+        { "Family_Type": "Other Eligible", "Priority_Type": "Military Retiree" },
+        { "Family_Type": "Other Eligible", "Priority_Type": "Deactivated Guard/Reserve Personnel or Inactive Guard/Reserve in a Training Status" }
+    ];
 
-        const masterFamilyTypes = [ "CDC Program Staff", "Active Duty Combat Wounded Warrior", "Active Duty Military", "Guard On Active Duty", "Reserves On Active Duty", "DoD Civilian", "Coast Guard Civilian", "DoD Contractor", "Gold Star Spouse (Combat Related)", "Other Eligible" ];
-        
-        const subFamilyTypes = [
-            { "Family_Type": "CDC Program Staff", "Priority_Type": "Single CDC Program Staff" },
-            { "Family_Type": "CDC Program Staff", "Priority_Type": "With Working Spouse" },
-            { "Family_Type": "CDC Program Staff", "Priority_Type": "With Student Spouse" },
-            { "Family_Type": "CDC Program Staff", "Priority_Type": "With Spouse Seeking Employment" },
-            { "Family_Type": "CDC Program Staff", "Priority_Type": "With Non-Working Spouse" },
-            { "Family_Type": "Active Duty Combat Wounded Warrior", "Priority_Type": "Active Duty Combat Wounded Warrior" },
-            { "Family_Type": "Active Duty Military", "Priority_Type": "Dual Active Duty Military" },
-            { "Family_Type": "Active Duty Military", "Priority_Type": "Single Active Duty Military" },
-            { "Family_Type": "Active Duty Military", "Priority_Type": "With Full-Time Working Spouse" },
-            { "Family_Type": "Active Duty Military", "Priority_Type": "With Part-Time Working Spouse" },
-            { "Family_Type": "Active Duty Military", "Priority_Type": "With Spouse Seeking Employment" },
-            { "Family_Type": "Active Duty Military", "Priority_Type": "With Full-Time Student Spouse" },
-            { "Family_Type": "Active Duty Military", "Priority_Type": "With Part-Time Student Spouse" },
-            { "Family_Type": "Active Duty Military", "Priority_Type": "With Non-Working Spouse" },
-            { "Family_Type": "Guard On Active Duty", "Priority_Type": "Dual Guard and Reserve on Active Duty" },
-            { "Family_Type": "Guard On Active Duty", "Priority_Type": "Single Guard and Reserve on Active Duty" },
-            { "Family_Type": "Guard On Active Duty", "Priority_Type": "With Full-Time Working Spouse" },
-            { "Family_Type": "Guard On Active Duty", "Priority_Type": "With Part-Time Working Spouse" },
-            { "Family_Type": "Guard On Active Duty", "Priority_Type": "With Spouse Seeking Employment" },
-            { "Family_Type": "Guard On Active Duty", "Priority_Type": "With Full-Time Student Spouse" },
-            { "Family_Type": "Guard On Active Duty", "Priority_Type": "With Part-Time Student Spouse" },
-            { "Family_Type": "Guard On Active Duty", "Priority_Type": "With Non-Working Spouse" },
-            { "Family_Type": "Reserves On Active Duty", "Priority_Type": "Dual Guard and Reserve on Active Duty" },
-            { "Family_Type": "Reserves On Active Duty", "Priority_Type": "Single Guard and Reserve on Active Duty" },
-            { "Family_Type": "Reserves On Active Duty", "Priority_Type": "With Full-Time Working Spouse" },
-            { "Family_Type": "Reserves On Active Duty", "Priority_Type": "With Part-Time Working Spouse" },
-            { "Family_Type": "Reserves On Active Duty", "Priority_Type": "With Spouse Seeking Employment" },
-            { "Family_Type": "Reserves On Active Duty", "Priority_Type": "With Full-Time Student Spouse" },
-            { "Family_Type": "Reserves On Active Duty", "Priority_Type": "With Part-Time Student Spouse" },
-            { "Family_Type": "Reserves On Active Duty", "Priority_Type": "With Non-Working Spouse" },
-            { "Family_Type": "DoD Civilian", "Priority_Type": "Dual DoD Civilian/Coast Guard Civilian" },
-            { "Family_Type": "DoD Civilian", "Priority_Type": "Single DoD Civilian/Coast Guard Civilian" },
-            { "Family_Type": "DoD Civilian", "Priority_Type": "With Full-Time Working Spouse" },
-            { "Family_Type": "DoD Civilian", "Priority_Type": "With Part-Time Working Spouse" },
-            { "Family_Type": "DoD Civilian", "Priority_Type": "DoD Civilian w/Spouse Seeking Employment" },
-            { "Family_Type": "DoD Civilian", "Priority_Type": "With Full-Time Student Spouse" },
-            { "Family_Type": "DoD Civilian", "Priority_Type": "With Part-Time Student Spouse" },
-            { "Family_Type": "DoD Civilian", "Priority_Type": "With Non-Working Spouse" },
-            { "Family_Type": "Coast Guard Civilian", "Priority_Type": "Dual DoD Civilian/Coast Guard Civilian" },
-            { "Family_Type": "Coast Guard Civilian", "Priority_Type": "Single DoD Civilian/Coast Guard Civilian" },
-            { "Family_Type": "Coast Guard Civilian", "Priority_Type": "With Full-Time Working Spouse" },
-            { "Family_Type": "Coast Guard Civilian", "Priority_Type": "With Part-Time Working Spouse" },
-            { "Family_Type": "Coast Guard Civilian", "Priority_Type": "DoD Civilian w/Spouse Seeking Employment" },
-            { "Family_Type": "Coast Guard Civilian", "Priority_Type": "With Full-Time Student Spouse" },
-            { "Family_Type": "Coast Guard Civilian", "Priority_Type": "With Part-Time Student Spouse" },
-            { "Family_Type": "Coast Guard Civilian", "Priority_Type": "With Non-Working Spouse" },
-            { "Family_Type": "DoD Contractor", "Priority_Type": "Dual DoD Contractor" },
-            { "Family_Type": "DoD Contractor", "Priority_Type": "Single DoD Contractor" },
-            { "Family_Type": "DoD Contractor", "Priority_Type": "With Full-Time Working Spouse" },
-            { "Family_Type": "DoD Contractor", "Priority_Type": "With Part-Time Working Spouse" },
-            { "Family_Type": "DoD Contractor", "Priority_Type": "With Spouse Seeking Employment" },
-            { "Family_Type": "DoD Contractor", "Priority_Type": "With Full-Time Student Spouse" },
-            { "Family_Type": "DoD Contractor", "Priority_Type": "With Non-Working Spouse" },
-            { "Family_Type": "Gold Star Spouse (Combat Related)", "Priority_Type": "Gold Star Spouse (Combat Related)-Working" },
-            { "Family_Type": "Gold Star Spouse (Combat Related)", "Priority_Type": "Gold Star Spouse (Combat Related)-Student" },
-            { "Family_Type": "Gold Star Spouse (Combat Related)", "Priority_Type": "Gold Star Spouse (Combat Related)-Seeking Employment" },
-            { "Family_Type": "Gold Star Spouse (Combat Related)", "Priority_Type": "Gold Star Spouse (Combat Related)-Non-working" },
-            { "Family_Type": "Other Eligible", "Priority_Type": "Military Retiree" },
-            { "Family_Type": "Other Eligible", "Priority_Type": "Deactivated Guard/Reserve Personnel or Inactive Guard/Reserve in a Training Status" }
-        ];
+    const familyTypeEligibility = [
+        {"military_family_type":"Single CDC Program Staff","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"military_family_type":"Single CDC Program Staff","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"military_family_type":"With Working Spouse","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"military_family_type":"With Working Spouse","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"military_family_type":"With Spouse Seeking Employment","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Not Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"military_family_type":"With Spouse Seeking Employment","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Not Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"military_family_type":"With Student Spouse","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Not Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"military_family_type":"With Student Spouse","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Not Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"military_family_type":"With Non-Working Spouse","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Not Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"military_family_type":"With Non-Working Spouse","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Not Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"military_family_type":"Active Duty Combat Wounded Warrior","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"Active Duty Combat Wounded Warrior","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"Dual Active Duty Military","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"Dual Active Duty Military","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"Single Active Duty Military","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"Single Active Duty Military","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"With Full-Time Working Spouse","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"With Full-Time Working Spouse","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"With Part-Time Working Spouse","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"With Part-Time Working Spouse","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"With Spouse Seeking Employment","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"With Spouse Seeking Employment","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"With Full-Time Student Spouse","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"With Full-Time Student Spouse","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"With Part-Time Student Spouse","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Not Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"military_family_type":"With Part-Time Student Spouse","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Not Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"military_family_type":"Dual Guard and Reserve on Active Duty","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"Dual Guard and Reserve on Active Duty","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"Single Guard and Reserve on Active Duty","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"Single Guard and Reserve on Active Duty","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"Dual DoD Civilian/Coast Guard Civilian","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"Dual DoD Civilian/Coast Guard Civilian","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"Single DoD Civilian/Coast Guard Civilian","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"Single DoD Civilian/Coast Guard Civilian","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"DoD Civilian w/Spouse Seeking Employment","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"DoD Civilian w/Spouse Seeking Employment","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"Dual DoD Contractor","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"military_family_type":"Dual DoD Contractor","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"military_family_type":"Single DoD Contractor","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"military_family_type":"Single DoD Contractor","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"military_family_type":"Gold Star Spouse (Combat Related)-Working","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"Gold Star Spouse (Combat Related)-Working","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"Gold Star Spouse (Combat Related)-Student","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"Gold Star Spouse (Combat Related)-Student","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"Gold Star Spouse (Combat Related)-Seeking Employment","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"Gold Star Spouse (Combat Related)-Seeking Employment","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
+        {"military_family_type":"Gold Star Spouse (Combat Related)-Non-working","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Not Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"military_family_type":"Gold Star Spouse (Combat Related)-Non-working","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Not Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"military_family_type":"Deactivated Guard/Reserve Personnel or Inactive Guard/Reserve in a Training Status","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"military_family_type":"Deactivated Guard/Reserve Personnel or Inactive Guard/Reserve in a Training Status","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"military_family_type":"Military Retiree","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
+        {"military_family_type":"Military Retiree","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"}
+    ];
 
-        const familyTypeEligibility = [
-            {"military_family_type":"Single CDC Program Staff","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"military_family_type":"Single CDC Program Staff","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"military_family_type":"With Working Spouse","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"military_family_type":"With Working Spouse","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"military_family_type":"With Spouse Seeking Employment","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Not Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"military_family_type":"With Spouse Seeking Employment","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Not Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"military_family_type":"With Student Spouse","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Not Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"military_family_type":"With Student Spouse","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Not Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"military_family_type":"With Non-Working Spouse","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Not Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"military_family_type":"With Non-Working Spouse","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Not Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"military_family_type":"Active Duty Combat Wounded Warrior","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"Active Duty Combat Wounded Warrior","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"Dual Active Duty Military","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"Dual Active Duty Military","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"Single Active Duty Military","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"Single Active Duty Military","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"With Full-Time Working Spouse","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"With Full-Time Working Spouse","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"With Part-Time Working Spouse","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"With Part-Time Working Spouse","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"With Spouse Seeking Employment","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"With Spouse Seeking Employment","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"With Full-Time Student Spouse","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"With Full-Time Student Spouse","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"With Part-Time Student Spouse","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Not Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"military_family_type":"With Part-Time Student Spouse","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Not Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"military_family_type":"Dual Guard and Reserve on Active Duty","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"Dual Guard and Reserve on Active Duty","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"Single Guard and Reserve on Active Duty","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"Single Guard and Reserve on Active Duty","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"Dual DoD Civilian/Coast Guard Civilian","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"Dual DoD Civilian/Coast Guard Civilian","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"Single DoD Civilian/Coast Guard Civilian","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"Single DoD Civilian/Coast Guard Civilian","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"DoD Civilian w/Spouse Seeking Employment","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"DoD Civilian w/Spouse Seeking Employment","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"Dual DoD Contractor","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"military_family_type":"Dual DoD Contractor","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"military_family_type":"Single DoD Contractor","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"military_family_type":"Single DoD Contractor","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"military_family_type":"Gold Star Spouse (Combat Related)-Working","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"Gold Star Spouse (Combat Related)-Working","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"Gold Star Spouse (Combat Related)-Student","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"Gold Star Spouse (Combat Related)-Student","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"Gold Star Spouse (Combat Related)-Seeking Employment","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"Gold Star Spouse (Combat Related)-Seeking Employment","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Eligible","MCCYN_PLUS":"Eligible","CCYH":"Eligible"},
-            {"military_family_type":"Gold Star Spouse (Combat Related)-Non-working","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Not Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"military_family_type":"Gold Star Spouse (Combat Related)-Non-working","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Not Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"military_family_type":"Deactivated Guard/Reserve Personnel or Inactive Guard/Reserve in a Training Status","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"military_family_type":"Deactivated Guard/Reserve Personnel or Inactive Guard/Reserve in a Training Status","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"military_family_type":"Military Retiree","school_age":"Yes","OCCP":"Eligible","CDC":"Not Eligible","FCC":"Eligible","SAC":"Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"},
-            {"military_family_type":"Military Retiree","school_age":"No","OCCP":"Eligible","CDC":"Eligible","FCC":"Eligible","SAC":"Not Eligible","MCCYN":"Not Eligible","MCCYN_PLUS":"Not Eligible","CCYH":"Not Eligible"}
-        ];
+    const programInfo = {
+        "OCCP": { "name": "Operation Child Care Project (OCCP)", "description": "The only national non-profit dedicated exclusively to child care access for military families offering free case management services to DoD affiliated families.", "learnMore": "https://www.occproject.org/", "signUp": "https://wkf.ms/4dvVT95" },
+        "CDC": { "name": "Child Development Centers (CDC)", "description": "DoD-operated child care centers offering an educational care environment for infants through Pre-K aged children.", "learnMore": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome/military-operated-child-care-programs", "signUp": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome#/" },
+        "FCC": { "name": "Family Child Care (FCC)", "description": "DoD-licensed independent contractors offering an in-home educational care environment, on or off an installation.", "learnMore": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome/military-operated-child-care-programs", "signUp": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome#/" },
+        "SAC": { "name": "School Age Care (SAC)", "description": "DoD-operated before and after school programs for school-aged children.", "learnMore": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome/military-operated-child-care-programs", "signUp": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome#/" },
+        "MCCYN": { "name": "Military Child Care in Your Neighborhood (MCCYN)", "description": "A subsidy program for civilian center-based or in-home licensed care when on-installation care is unavailable. Also known as Military Fee Assistance.", "learnMore": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome/mccyn", "signUp": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome#/" },
+        "MCCYN_PLUS": { "name": "MCCYN-PLUS", "description": "An enhanced subsidy program available in select states with a demonstrated need for additional child care options.", "learnMore": "https://www.militaryonesource.mil/parenting/child-care/mccyn-plus-child-care-program/", "signUp": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome#/" },
+        "CCYH": { "name": "Child Care in Your Home (CCYH)", "description": "A pilot program providing fee assistance for in-home child care providers, available in limited locations.", "learnMore": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome/ccyh", "signUp": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome#/" }
+    };
 
-        const programInfo = {
-            "OCCP": { "name": "Operation Child Care Project (OCCP)", "description": "The only national non-profit dedicated exclusively to child care access for military families offering free case management services to DoD affiliated families.", "learnMore": "https://www.occproject.org/", "signUp": "https://wkf.ms/4dvVT95" },
-            "CDC": { "name": "Child Development Centers (CDC)", "description": "DoD-operated child care centers offering an educational care environment for infants through Pre-K aged children.", "learnMore": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome/military-operated-child-care-programs", "signUp": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome#/" },
-            "FCC": { "name": "Family Child Care (FCC)", "description": "DoD-licensed independent contractors offering an in-home educational care environment, on or off an installation.", "learnMore": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome/military-operated-child-care-programs", "signUp": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome#/" },
-            "SAC": { "name": "School Age Care (SAC)", "description": "DoD-operated before and after school programs for school-aged children.", "learnMore": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome/military-operated-child-care-programs", "signUp": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome#/" },
-            "MCCYN": { "name": "Military Child Care in Your Neighborhood (MCCYN)", "description": "A subsidy program for civilian center-based or in-home licensed care when on-installation care is unavailable. Also known as Military Fee Assistance.", "learnMore": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome/mccyn", "signUp": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome#/" },
-            "MCCYN_PLUS": { "name": "MCCYN-PLUS", "description": "An enhanced subsidy program available in select states with a demonstrated need for additional child care options.", "learnMore": "https://www.militaryonesource.mil/parenting/child-care/mccyn-plus-child-care-program/", "signUp": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome#/" },
-            "CCYH": { "name": "Child Care in Your Home (CCYH)", "description": "A pilot program providing fee assistance for in-home child care providers, available in limited locations.", "learnMore": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome/ccyh", "signUp": "https://public.militarychildcare.csd.disa.mil/mcc-central/mcchome#/" }
-        };
+    // --- CALCULATOR LOGIC ---
+    document.addEventListener('DOMContentLoaded', () => {
 
-        // --- CALCULATOR LOGIC ---
-        document.addEventListener('DOMContentLoaded', () => {
+        // Form elements
+        const form = document.getElementById('eligibility-form');
+        const installationSelect = document.getElementById('installation');
+        const familyTypeSelect = document.getElementById('family-type');
+        const subFamilyTypeSelect = document.getElementById('sub-family-type');
+        const schoolAgeRadios = document.querySelectorAll('input[name="school-age"]');
+        const calculateBtn = document.getElementById('calculate-btn');
+        const resultDiv = document.getElementById('eligibility-result');
 
-            // Form elements
-            const form = document.getElementById('eligibility-form');
-            const installationSelect = document.getElementById('installation');
-            const familyTypeSelect = document.getElementById('family-type');
-            const subFamilyTypeSelect = document.getElementById('sub-family-type');
-            const schoolAgeRadios = document.querySelectorAll('input[name="school-age"]');
-            const calculateBtn = document.getElementById('calculate-btn');
-            const resultDiv = document.getElementById('eligibility-result');
-
-            // Populate initial dropdowns
-            installationsData.forEach(inst => {
-                const option = document.createElement('option');
-                option.value = inst.Installation;
-                option.textContent = `${inst.Installation}, ${inst.State}`;
-                installationSelect.appendChild(option);
-            });
-
-            masterFamilyTypes.forEach(type => {
-                const option = document.createElement('option');
-                option.value = type;
-                option.textContent = type;
-                familyTypeSelect.appendChild(option);
-            });
-
-            // Form step logic
-            installationSelect.addEventListener('change', () => {
-                if (installationSelect.value) {
-                    familyTypeSelect.disabled = false;
-                    familyTypeSelect.classList.remove('bg-gray-100');
-                } else {
-                    familyTypeSelect.disabled = true;
-                    familyTypeSelect.classList.add('bg-gray-100');
-                }
-                subFamilyTypeSelect.innerHTML = '<option value="">-- Select a Situation --</option>';
-                subFamilyTypeSelect.disabled = true;
-                subFamilyTypeSelect.classList.add('bg-gray-100');
-                Array.from(schoolAgeRadios).forEach(r => { r.checked = false; r.disabled = true; });
-                checkFormCompletion();
-            });
-
-            familyTypeSelect.addEventListener('change', () => {
-                const selectedFamilyType = familyTypeSelect.value;
-                subFamilyTypeSelect.innerHTML = '<option value="">-- Select a Situation --</option>';
-
-                if (selectedFamilyType) {
-                    const relevantSubTypes = subFamilyTypes.filter(st => st.Family_Type === selectedFamilyType);
-                    if (relevantSubTypes.length > 0) {
-                        relevantSubTypes.forEach(st => {
-                            const option = document.createElement('option');
-                            option.value = st.Priority_Type;
-                            option.textContent = st.Priority_Type;
-                            subFamilyTypeSelect.appendChild(option);
-                        });
-                        subFamilyTypeSelect.disabled = false;
-                        subFamilyTypeSelect.classList.remove('bg-gray-100');
-                    } else {
-                        subFamilyTypeSelect.disabled = true;
-                        subFamilyTypeSelect.classList.add('bg-gray-100');
-                    }
-                } else {
-                    subFamilyTypeSelect.disabled = true;
-                    subFamilyTypeSelect.classList.add('bg-gray-100');
-                }
-                Array.from(schoolAgeRadios).forEach(r => { r.checked = false; r.disabled = true; });
-                checkFormCompletion();
-            });
-
-            subFamilyTypeSelect.addEventListener('change', () => {
-                if (subFamilyTypeSelect.value) {
-                    Array.from(schoolAgeRadios).forEach(r => r.disabled = false);
-                } else {
-                    Array.from(schoolAgeRadios).forEach(r => { r.checked = false; r.disabled = true; });
-                }
-                checkFormCompletion();
-            });
-            
-            schoolAgeRadios.forEach(radio => radio.addEventListener('change', checkFormCompletion));
-
-            function checkFormCompletion() {
-                const schoolAgeSelected = Array.from(schoolAgeRadios).some(r => r.checked);
-                if (installationSelect.value && familyTypeSelect.value && subFamilyTypeSelect.value && schoolAgeSelected) {
-                    calculateBtn.disabled = false;
-                } else {
-                    calculateBtn.disabled = true;
-                }
-            }
-
-
-            // Form submission
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-
-                const selectedInstallationName = installationSelect.value;
-                const selectedSubFamilyType = subFamilyTypeSelect.value;
-                const selectedSchoolAge = document.querySelector('input[name="school-age"]:checked').value;
-
-                const installationRules = installationsData.find(inst => inst.Installation === selectedInstallationName);
-                const familyRules = familyTypeEligibility.find(ft => ft.military_family_type === selectedSubFamilyType && ft.school_age === selectedSchoolAge);
-
-                resultDiv.innerHTML = ''; // Clear previous results
-
-                if (!installationRules || !familyRules) {
-                    resultDiv.innerHTML = `<div class="text-center p-6 bg-red-100 border border-red-200 rounded-lg"><h3 class="text-2xl font-bold text-red-800">Calculation Error</h3><p class="mt-2 text-red-700">We couldn't determine eligibility with the selected options. This may be because the specific combination is not in our database. Please try different selections or contact us for assistance.</p></div>`;
-                    return;
-                }
-
-                const finalEligibility = {};
-                const programKeys = Object.keys(programInfo);
-
-                programKeys.forEach(key => {
-                    if (installationRules[key] === 'Eligible' && familyRules[key] === 'Eligible') {
-                        finalEligibility[key] = 'Eligible';
-                    } else {
-                        finalEligibility[key] = 'Not Eligible';
-                    }
-                });
-
-                renderResults(finalEligibility);
-            });
-
-            function renderResults(eligibility) {
-                const allProgramKeys = Object.keys(programInfo);
-                const eligiblePrograms = allProgramKeys.filter(key => eligibility[key] === 'Eligible');
-                const ineligiblePrograms = allProgramKeys.filter(key => eligibility[key] !== 'Eligible');
-
-                let html = `<h3 class="font-heading text-3xl font-bold text-center text-gray-800 mb-8">Your Eligibility Results</h3>`;
-
-                // Render Eligible Programs
-                if (eligiblePrograms.length > 0) {
-                     html += `<div class="mb-12">`;
-                     html += `<h4 class="font-heading text-2xl font-bold text-occp-blue mb-4 border-b-2 border-occp-medium-blue pb-2">Eligible Programs</h4>`;
-                     html += `<p class="text-lg text-gray-600 mb-8">Based on your selections, you may be eligible for the following programs:</p>`;
-                     html += `<div class="grid md:grid-cols-2 gap-6">`;
-                     eligiblePrograms.forEach(key => {
-                        const program = programInfo[key];
-                        html += `
-                            <div class="bg-occp-light-blue border border-occp-medium-blue rounded-lg p-6 flex flex-col h-full">
-                                <h5 class="font-heading text-xl font-bold text-occp-blue">${program.name}</h5>
-                                <p class="text-gray-700 mt-2 flex-grow">${program.description}</p>
-                                <div class="mt-6 flex flex-wrap gap-3">
-                                    ${program.learnMore ? `<a href="${program.learnMore}" target="_blank" class="font-heading bg-white text-occp-blue py-2 px-4 rounded-full font-semibold border-2 border-occp-blue hover:bg-occp-blue hover:text-white transition duration-300">Learn More</a>` : ''}
-                                    ${program.signUp ? `<a href="${program.signUp}" target="_blank" class="font-heading bg-occp-green text-white py-2 px-4 rounded-full font-semibold hover:bg-opacity-90 transition duration-300">Sign Up</a>` : ''}
-                                </div>
-                            </div>
-                        `;
-                     });
-                     html += `</div></div>`;
-                } else {
-                    html += `<div class="text-center p-8 bg-yellow-50 border border-yellow-200 rounded-lg mb-12">
-                                <h4 class="font-heading text-2xl font-bold text-yellow-800">No Eligible Programs Found</h4>
-                                <p class="mt-2 text-yellow-700 text-lg">Based on your selections, you may not be eligible for any programs in our calculator. We recommend contacting us directly to discuss your specific situation.</p>
-                             </div>`;
-                }
-
-                // Render Ineligible Programs
-                if (ineligiblePrograms.length > 0) {
-                     html += `<div class="mb-12">`;
-                     html += `<h4 class="font-heading text-2xl font-bold text-gray-600 mb-4 border-b-2 border-gray-200 pb-2">Programs You May Not Be Eligible For</h4>`;
-                     html += `<div class="grid md:grid-cols-2 gap-6">`;
-                     ineligiblePrograms.forEach(key => {
-                        const program = programInfo[key];
-                        html += `
-                            <div class="bg-gray-100 border border-gray-200 rounded-lg p-6 flex flex-col h-full opacity-75">
-                                <h5 class="font-heading text-xl font-bold text-gray-500">${program.name}</h5>
-                                <p class="text-gray-600 mt-2 flex-grow">${program.description}</p>
-                                <div class="mt-6 flex flex-wrap gap-3">
-                                    ${program.learnMore ? `<a href="${program.learnMore}" target="_blank" class="font-heading bg-white text-gray-600 py-2 px-4 rounded-full font-semibold border border-gray-300 hover:bg-gray-200 transition duration-300">Learn More</a>` : ''}
-                                </div>
-                            </div>
-                        `;
-                     });
-                     html += `</div></div>`;
-                }
-                
-                html += `<p class="text-center text-sm text-gray-500 mt-10"><strong>Disclaimer:</strong> This calculator provides an estimate for informational purposes only and does not guarantee eligibility or assistance. Final eligibility is determined upon official application and verification.</p>`;
-
-                resultDiv.innerHTML = html;
-            }
+        // Populate initial dropdowns
+        installationsData.forEach(inst => {
+            const option = document.createElement('option');
+            option.value = inst.Installation;
+            option.textContent = `${inst.Installation}, ${inst.State}`;
+            installationSelect.appendChild(option);
         });
 
-    </script>
+        masterFamilyTypes.forEach(type => {
+            const option = document.createElement('option');
+            option.value = type;
+            option.textContent = type;
+            familyTypeSelect.appendChild(option);
+        });
 
+        // Form step logic
+        installationSelect.addEventListener('change', () => {
+            if (installationSelect.value) {
+                familyTypeSelect.disabled = false;
+                familyTypeSelect.classList.remove('bg-gray-50');
+            } else {
+                familyTypeSelect.disabled = true;
+                familyTypeSelect.classList.add('bg-gray-50');
+            }
+            subFamilyTypeSelect.innerHTML = '<option value="">-- Select a Situation --</option>';
+            subFamilyTypeSelect.disabled = true;
+            subFamilyTypeSelect.classList.add('bg-gray-50');
+            Array.from(schoolAgeRadios).forEach(r => { r.checked = false; r.disabled = true; });
+            checkFormCompletion();
+        });
+
+        familyTypeSelect.addEventListener('change', () => {
+            const selectedFamilyType = familyTypeSelect.value;
+            subFamilyTypeSelect.innerHTML = '<option value="">-- Select a Situation --</option>';
+
+            if (selectedFamilyType) {
+                const relevantSubTypes = subFamilyTypes.filter(st => st.Family_Type === selectedFamilyType);
+                if (relevantSubTypes.length > 0) {
+                    relevantSubTypes.forEach(st => {
+                        const option = document.createElement('option');
+                        option.value = st.Priority_Type;
+                        option.textContent = st.Priority_Type;
+                        subFamilyTypeSelect.appendChild(option);
+                    });
+                    subFamilyTypeSelect.disabled = false;
+                    subFamilyTypeSelect.classList.remove('bg-gray-50');
+                } else {
+                    subFamilyTypeSelect.disabled = true;
+                    subFamilyTypeSelect.classList.add('bg-gray-50');
+                }
+            } else {
+                subFamilyTypeSelect.disabled = true;
+                subFamilyTypeSelect.classList.add('bg-gray-50');
+            }
+            Array.from(schoolAgeRadios).forEach(r => { r.checked = false; r.disabled = true; });
+            checkFormCompletion();
+        });
+
+        subFamilyTypeSelect.addEventListener('change', () => {
+            if (subFamilyTypeSelect.value) {
+                Array.from(schoolAgeRadios).forEach(r => r.disabled = false);
+            } else {
+                Array.from(schoolAgeRadios).forEach(r => { r.checked = false; r.disabled = true; });
+            }
+            checkFormCompletion();
+        });
+        
+        schoolAgeRadios.forEach(radio => radio.addEventListener('change', checkFormCompletion));
+
+        function checkFormCompletion() {
+            const schoolAgeSelected = Array.from(schoolAgeRadios).some(r => r.checked);
+            if (installationSelect.value && familyTypeSelect.value && subFamilyTypeSelect.value && schoolAgeSelected) {
+                calculateBtn.disabled = false;
+            } else {
+                calculateBtn.disabled = true;
+            }
+        }
+
+
+        // Form submission
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const selectedInstallationName = installationSelect.value;
+            const selectedSubFamilyType = subFamilyTypeSelect.value;
+            const selectedSchoolAge = document.querySelector('input[name="school-age"]:checked').value;
+
+            const installationRules = installationsData.find(inst => inst.Installation === selectedInstallationName);
+            const familyRules = familyTypeEligibility.find(ft => ft.military_family_type === selectedSubFamilyType && ft.school_age === selectedSchoolAge);
+
+            resultDiv.innerHTML = ''; // Clear previous results
+
+            if (!installationRules || !familyRules) {
+                resultDiv.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+                  <h4 class="text-lg font-bold text-red-700">Calculation Error</h4>
+                  <p class="mt-2 text-red-600">We couldn't determine eligibility with the selected options. Try different selections or contact OCCP for assistance.</p>
+                </div>`;
+                return;
+            }
+
+            const finalEligibility = {};
+            const programKeys = Object.keys(programInfo);
+
+            programKeys.forEach(key => {
+                if (installationRules[key] === 'Eligible' && familyRules[key] === 'Eligible') {
+                    finalEligibility[key] = 'Eligible';
+                } else {
+                    finalEligibility[key] = 'Not Eligible';
+                }
+            });
+
+            renderResults(finalEligibility);
+            // Smooth scroll to results on mobile/short screens
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        function renderResults(eligibility) {
+            const allProgramKeys = Object.keys(programInfo);
+            const eligiblePrograms = allProgramKeys.filter(key => eligibility[key] === 'Eligible');
+            const ineligiblePrograms = allProgramKeys.filter(key => eligibility[key] !== 'Eligible');
+
+            let html = `<div class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-occp-medium-blue">`;
+            html += `<h3 class="text-2xl font-heading font-bold text-occp-blue mb-4 text-center">Your Eligibility Results</h3>`;
+
+            // Eligible Programs
+            if (eligiblePrograms.length > 0) {
+                 html += `<div class="mb-6">`;
+                 html += `<h4 class="text-lg font-bold text-occp-blue mb-3">Eligible Programs</h4>`;
+                 html += `<p class="text-gray-600 mb-4">Based on your selections, you may be eligible for the following programs:</p>`;
+                 html += `<div class="grid gap-4 sm:grid-cols-2">`;
+                 eligiblePrograms.forEach(key => {
+                    const program = programInfo[key];
+                    html += `
+                        <article class="border border-occp-medium-blue bg-occp-accent rounded-lg p-4 flex flex-col">
+                            <h5 class="font-heading text-base font-bold text-occp-blue">${program.name}</h5>
+                            <p class="text-gray-700 mt-2 text-sm flex-grow">${program.description}</p>
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                ${program.learnMore ? `<a href="${program.learnMore}" target="_blank" class="inline-block text-xs font-semibold border border-occp-blue text-occp-blue px-3 py-2 rounded-full hover:bg-occp-blue hover:text-white transition">Learn More</a>` : ''}
+                                ${program.signUp ? `<a href="${program.signUp}" target="_blank" class="inline-block text-xs font-semibold bg-occp-green text-occp-blue px-3 py-2 rounded-full hover:opacity-95 transition">Sign Up</a>` : ''}
+                            </div>
+                        </article>
+                    `;
+                 });
+                 html += `</div></div>`;
+            } else {
+                html += `<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                            <h4 class="font-heading font-bold text-yellow-800">No Eligible Programs Found</h4>
+                            <p class="text-yellow-700 mt-2">You may not be eligible based on the selected options. Please contact OCCP for additional assistance.</p>
+                         </div>`;
+            }
+
+            // Ineligible Programs
+            if (ineligiblePrograms.length > 0) {
+                 html += `<div class="mt-4">`;
+                 html += `<h4 class="text-lg font-bold text-gray-700 mb-3">Programs You May Not Be Eligible For</h4>`;
+                 html += `<div class="grid gap-4 sm:grid-cols-2">`;
+                 ineligiblePrograms.forEach(key => {
+                    const program = programInfo[key];
+                    html += `
+                        <article class="bg-gray-50 border border-gray-200 rounded-lg p-4 opacity-80">
+                            <h5 class="font-heading text-sm font-bold text-gray-500">${program.name}</h5>
+                            <p class="text-gray-600 mt-2 text-sm">${program.description}</p>
+                            <div class="mt-3">
+                                ${program.learnMore ? `<a href="${program.learnMore}" target="_blank" class="text-xs text-gray-600 font-medium border border-gray-200 px-3 py-2 rounded-full hover:bg-gray-100 transition">Learn More</a>` : ''}
+                            </div>
+                        </article>
+                    `;
+                 });
+                 html += `</div></div>`;
+            }
+
+            html += `<p class="mt-6 text-xs text-gray-500 text-center"><strong>Disclaimer:</strong> This calculator provides an estimate for informational purposes only and does not guarantee eligibility or assistance. Final eligibility is determined upon official application and verification.</p>`;
+            html += `</div>`;
+
+            resultDiv.innerHTML = html;
+        }
+    });
+  </script>
 </body>
 </html>
