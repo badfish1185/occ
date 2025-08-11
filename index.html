@@ -53,7 +53,7 @@
 
   <!-- Header -->
   <header class="bg-white shadow sticky top-0 z-40">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between py-4">
         <div class="flex items-center space-x-4">
           <div class="rounded-full bg-occp-blue w-12 h-12 flex items-center justify-center text-white font-bold text-lg">OC</div>
@@ -68,14 +68,24 @@
           <a href="https://www.occproject.org/" target="_blank" class="text-sm font-medium text-gray-600 hover:underline">About OCCP</a>
         </nav>
 
-        <div class="md:hidden text-sm text-gray-500">Mobile</div>
+        <div class="md:hidden">
+          <button id="menu-btn" class="p-2 rounded-md text-occp-blue focus:outline-none focus:ring-2 focus:ring-occp-blue" aria-label="Open navigation menu">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.25h16.5M3.75 12h16.5m-16.5 6.75h16.5" />
+            </svg>
+          </button>
+        </div>
       </div>
+      <nav id="mobile-nav" class="md:hidden hidden flex-col space-y-2 pb-4">
+        <a href="https://theoperationchildcareproject.org/" target="_blank" class="text-sm font-medium text-occp-blue hover:underline">occproject.org</a>
+        <a href="https://www.occproject.org/" target="_blank" class="text-sm font-medium text-gray-600 hover:underline">About OCCP</a>
+      </nav>
     </div>
   </header>
 
-  <!-- Main content: vertical, centered, mobile-first -->
+  <!-- Main content: full width with responsive columns -->
   <main class="flex-grow w-full">
-    <div class="max-w-3xl mx-auto px-4 py-8">
+    <div class="max-w-screen-xl mx-auto px-4 py-8">
 
       <!-- Intro / Hero -->
       <section class="bg-white rounded-2xl shadow-lg p-6 sm:p-8 mb-6 border border-occp-medium-blue">
@@ -90,10 +100,11 @@
         </div>
       </section>
 
-      <!-- Card: Form -->
-      <section class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 mb-6 border border-occp-medium-blue">
-        <form id="eligibility-form" class="space-y-6" aria-labelledby="form-heading">
-          <h3 id="form-heading" class="text-2xl font-heading font-bold text-occp-blue">Eligibility Steps</h3>
+      <div class="lg:grid lg:grid-cols-2 lg:gap-8">
+        <!-- Card: Form -->
+        <section class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 mb-6 lg:mb-0 border border-occp-medium-blue">
+          <form id="eligibility-form" class="space-y-6" aria-labelledby="form-heading">
+            <h3 id="form-heading" class="text-2xl font-heading font-bold text-occp-blue">Eligibility Steps</h3>
 
           <!-- Step 1: Installation -->
           <div class="flex items-start gap-4">
@@ -158,7 +169,8 @@
       </section>
 
       <!-- Results -->
-      <section id="eligibility-result" class="min-h-[120px]"></section>
+      <section id="eligibility-result" class="min-h-[200px] lg:min-h-0 lg:h-full mt-6 lg:mt-0"></section>
+      </div>
 
       <!-- Footer (small) -->
       <footer class="mt-8 text-center text-xs text-gray-500">
@@ -169,6 +181,13 @@
 
   <!-- Scripts & Data (kept intact, but the UI classes above are updated) -->
   <script>
+    // Mobile navigation toggle
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileNav = document.getElementById('mobile-nav');
+    menuBtn.addEventListener('click', () => {
+      mobileNav.classList.toggle('hidden');
+    });
+
     // --- DATA FROM SPREADSHEETS ---
     // This data is now the full dataset from the provided files.
     // In a real-world application, this would likely be loaded from a database or API.
