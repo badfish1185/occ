@@ -111,7 +111,8 @@
             <div class="step-badge bg-occp-light-blue text-occp-blue flex items-center justify-center font-semibold">1</div>
             <div class="flex-1">
               <label for="installation" class="block text-sm font-medium text-gray-700 mb-2">Select your installation</label>
-              <select id="installation" name="installation" class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base focus:ring-2 focus:ring-occp-blue focus:outline-none">
+              <input id="installation-search" type="text" placeholder="Search installations" class="w-full mb-2 rounded-lg border border-gray-300 px-4 py-2 text-base focus:ring-2 focus:ring-occp-blue focus:outline-none" aria-label="Search installations" />
+              <select id="installation" name="installation" size="8" class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base focus:ring-2 focus:ring-occp-blue focus:outline-none overflow-y-auto">
                 <option value="">-- Select an Installation --</option>
               </select>
             </div>
@@ -613,6 +614,7 @@
         // Form elements
         const form = document.getElementById('eligibility-form');
         const installationSelect = document.getElementById('installation');
+        const installationSearch = document.getElementById('installation-search');
         const familyTypeSelect = document.getElementById('family-type');
         const subFamilyTypeSelect = document.getElementById('sub-family-type');
         const schoolAgeRadios = document.querySelectorAll('input[name="school-age"]');
@@ -620,11 +622,29 @@
         const resultDiv = document.getElementById('eligibility-result');
 
         // Populate initial dropdowns
-        installationsData.forEach(inst => {
-            const option = document.createElement('option');
-            option.value = inst.Installation;
-            option.textContent = `${inst.Installation}, ${inst.State}`;
-            installationSelect.appendChild(option);
+        const installationOptions = installationsData.map(inst => ({
+            value: inst.Installation,
+            label: `${inst.Installation}, ${inst.State}`
+        }));
+
+        function renderInstallationOptions(filter = '') {
+            installationSelect.innerHTML = '<option value="">-- Select an Installation --</option>';
+            installationOptions
+                .filter(opt => opt.label.toLowerCase().includes(filter.toLowerCase()))
+                .forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt.value;
+                    option.textContent = opt.label;
+                    installationSelect.appendChild(option);
+                });
+        }
+
+        renderInstallationOptions();
+
+        installationSearch.addEventListener('input', () => {
+            renderInstallationOptions(installationSearch.value);
+            installationSelect.value = '';
+            installationSelect.dispatchEvent(new Event('change'));
         });
 
         masterFamilyTypes.forEach(type => {
