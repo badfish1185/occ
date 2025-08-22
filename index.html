@@ -100,46 +100,6 @@
       position: relative;
     }
     
-    .select-dropdown {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: white;
-      border: 1px solid #d1d5db;
-      border-top: none;
-      border-radius: 0 0 0.5rem 0.5rem;
-      max-height: 200px;
-      overflow-y: auto;
-      z-index: 10;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    }
-    
-    .select-option {
-      padding: 0.75rem 1rem;
-      cursor: pointer;
-      border-bottom: 1px solid #f3f4f6;
-      transition: background-color 0.15s;
-    }
-    
-    .select-option:hover {
-      background: #f9fafb;
-    }
-    
-    .select-option.selected {
-      background: #e6f0ff;
-      color: #003366;
-    }
-    
-    .select-option.highlighted {
-      background: #f3f4f6;
-    }
-    
-    .pointer-events-none {
-      pointer-events: none;
-    }
-    
     /* Card hover effects */
     .hover-lift {
       transition: all 0.3s ease;
@@ -258,12 +218,14 @@
             <div class="flex-1">
               <label for="installation" class="block text-lg font-semibold text-gray-800 mb-3">Select your installation</label>
               <div class="custom-select">
-                <input id="installation-search" type="text" placeholder="Search installations (e.g., Fort Bragg, MacDill AFB...)" 
-                       class="w-full rounded-lg border-2 border-gray-300 px-4 py-3 text-base focus:ring-2 focus:ring-occp-blue focus:border-occp-blue focus:outline-none transition-all" 
+                <input id="installation-search" type="text" placeholder="Search installations (e.g., Fort Bragg, MacDill AFB...)"
+                       class="w-full rounded-lg border-2 border-gray-300 px-4 py-3 text-base focus:ring-2 focus:ring-occp-blue focus:border-occp-blue focus:outline-none transition-all"
                        aria-label="Search installations" />
-                <div id="installation-dropdown" class="select-dropdown"></div>
+                <select id="installation" name="installation"
+                        class="w-full mt-2 rounded-lg border-2 border-gray-300 px-4 py-3 text-base focus:ring-2 focus:ring-occp-blue focus:border-occp-blue focus:outline-none transition-all">
+                  <option value="">-- Select an Installation --</option>
+                </select>
               </div>
-              <input type="hidden" id="installation" name="installation" />
             </div>
           </div>
 
@@ -823,7 +785,6 @@
         const form = document.getElementById('eligibility-form');
         const installationSelect = document.getElementById('installation');
         const installationSearch = document.getElementById('installation-search');
-        const installationDropdown = document.getElementById('installation-dropdown');
         const familyTypeSelect = document.getElementById('family-type');
         const subFamilyTypeSelect = document.getElementById('sub-family-type');
         const schoolAgeRadios = document.querySelectorAll('input[name="school-age"]');
@@ -861,6 +822,29 @@
             renderInstallationOptions(installationSearch.value);
             installationSelect.value = '';
             installationSelect.dispatchEvent(new Event('change'));
+        });
+
+        installationSelect.addEventListener('change', () => {
+            if (installationSelect.value) {
+                updateStep(1, true);
+                enableStep(2);
+            } else {
+                const step1 = document.getElementById('step-1');
+                const badge1 = document.getElementById('badge-1');
+                step1.classList.remove('completed');
+                badge1.classList.remove('completed');
+                badge1.innerHTML = '<span>1</span><svg class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>';
+                enableStep(1);
+                familyTypeSelect.value = '';
+                familyTypeSelect.disabled = true;
+                familyTypeSelect.classList.add('bg-gray-50');
+                subFamilyTypeSelect.innerHTML = '<option value="">-- Select a Situation --</option>';
+                subFamilyTypeSelect.disabled = true;
+                subFamilyTypeSelect.classList.add('bg-gray-50');
+                Array.from(schoolAgeRadios).forEach(r => { r.checked = false; r.disabled = true; });
+                updateRadioStyles();
+            }
+            checkFormCompletion();
         });
 
         // Initialize family types 
