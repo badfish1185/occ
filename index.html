@@ -38,15 +38,140 @@
     html, body { height: 100%; }
     body {
       font-family: 'Lato', sans-serif;
-      background: linear-gradient(180deg, #f8fbff 0%, #e6f0ff 100%);
+      background: linear-gradient(135deg, #f8fbff 0%, #e6f0ff 50%, #f8fbff 100%);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
     h1,h2,h3 { font-family: 'Montserrat', sans-serif; }
-    /* Small visual touch for the numeric step badges */
-    .step-badge { width: 38px; height: 38px; line-height: 38px; border-radius: 9999px; }
+    
+    /* Enhanced step badges */
+    .step-badge { 
+      width: 48px; 
+      height: 48px; 
+      line-height: 48px; 
+      border-radius: 9999px;
+      background: linear-gradient(135deg, #99cc33, #7aa329);
+      color: white;
+      box-shadow: 0 4px 12px rgba(153, 204, 51, 0.3);
+      transition: all 0.3s ease;
+    }
+    
+    .step-badge.completed {
+      background: linear-gradient(135deg, #10b981, #059669);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    
+    .step-badge.active {
+      transform: scale(1.1);
+      box-shadow: 0 6px 20px rgba(153, 204, 51, 0.4);
+    }
+    
+    /* Progress bar */
+    .progress-bar {
+      height: 4px;
+      background: #e5e7eb;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #99cc33, #7aa329);
+      border-radius: 2px;
+      transition: width 0.5s ease;
+    }
+    
+    /* Enhanced form styling */
+    .form-step {
+      opacity: 0.6;
+      transition: all 0.3s ease;
+    }
+    
+    .form-step.active {
+      opacity: 1;
+    }
+    
+    .form-step.completed {
+      opacity: 0.9;
+    }
+    
+    /* Custom dropdown styling */
+    .custom-select {
+      position: relative;
+    }
+    
+    .select-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid #d1d5db;
+      border-top: none;
+      border-radius: 0 0 0.5rem 0.5rem;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 10;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .select-option {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      border-bottom: 1px solid #f3f4f6;
+      transition: background-color 0.15s;
+    }
+    
+    .select-option:hover {
+      background: #f9fafb;
+    }
+    
+    .select-option.selected {
+      background: #e6f0ff;
+      color: #003366;
+    }
+    
+    /* Card hover effects */
+    .hover-lift {
+      transition: all 0.3s ease;
+    }
+    
+    .hover-lift:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    
+    /* Result cards animation */
+    .result-card {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slideInUp 0.6s ease forwards;
+    }
+    
+    .result-card:nth-child(2) { animation-delay: 0.1s; }
+    .result-card:nth-child(3) { animation-delay: 0.2s; }
+    .result-card:nth-child(4) { animation-delay: 0.3s; }
+    
+    @keyframes slideInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
     /* Make links open clearly on mobile */
     a[target="_blank"] { text-decoration-skip-ink: auto; }
+    
+    /* Responsive improvements */
+    @media (min-width: 1024px) {
+      .desktop-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+      }
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -98,60 +223,105 @@
         </div>
       </section>
 
-      <div class="flex flex-col gap-8">
+      <div class="desktop-grid gap-8">
         <!-- Card: Form -->
-        <section class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-occp-medium-blue">
-          <form id="eligibility-form" class="space-y-6" aria-labelledby="form-heading">
-            <h3 id="form-heading" class="text-2xl font-heading font-bold text-occp-blue">Eligibility Steps</h3>
+        <section class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-occp-medium-blue hover-lift">
+          <!-- Progress Bar -->
+          <div class="mb-6">
+            <div class="flex items-center justify-between mb-2">
+              <h3 id="form-heading" class="text-2xl font-heading font-bold text-occp-blue">Eligibility Calculator</h3>
+              <span class="text-sm font-medium text-gray-600" id="progress-text">Step 1 of 4</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="progress-fill" style="width: 25%"></div>
+            </div>
+          </div>
+          
+          <form id="eligibility-form" class="space-y-8" aria-labelledby="form-heading">
 
           <!-- Step 1: Installation -->
-          <div class="flex items-start gap-4">
-            <div class="step-badge bg-occp-light-blue text-occp-blue flex items-center justify-center font-semibold">1</div>
+          <div class="flex items-start gap-6 form-step active" id="step-1">
+            <div class="step-badge active flex items-center justify-center font-bold text-lg" id="badge-1">
+              <span>1</span>
+              <svg class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
             <div class="flex-1">
-              <label for="installation" class="block text-sm font-medium text-gray-700 mb-2">Select your installation</label>
-              <input id="installation-search" type="text" placeholder="Search installations" class="w-full mb-2 rounded-lg border border-gray-300 px-4 py-2 text-base focus:ring-2 focus:ring-occp-blue focus:outline-none" aria-label="Search installations" />
-              <select id="installation" name="installation" size="8" class="w-full rounded-lg border border-gray-300 px-4 py-3 text-base focus:ring-2 focus:ring-occp-blue focus:outline-none overflow-y-auto">
-                <option value="">-- Select an Installation --</option>
-              </select>
+              <label for="installation" class="block text-lg font-semibold text-gray-800 mb-3">Select your installation</label>
+              <div class="custom-select">
+                <input id="installation-search" type="text" placeholder="Search installations (e.g., Fort Bragg, MacDill AFB...)" 
+                       class="w-full rounded-lg border-2 border-gray-300 px-4 py-3 text-base focus:ring-2 focus:ring-occp-blue focus:border-occp-blue focus:outline-none transition-all" 
+                       aria-label="Search installations" />
+                <div id="installation-dropdown" class="select-dropdown"></div>
+              </div>
+              <input type="hidden" id="installation" name="installation" />
             </div>
           </div>
 
           <!-- Step 2: Family Type -->
-          <div class="flex items-start gap-4">
-            <div class="step-badge bg-occp-light-blue text-occp-blue flex items-center justify-center font-semibold">2</div>
+          <div class="flex items-start gap-6 form-step" id="step-2">
+            <div class="step-badge flex items-center justify-center font-bold text-lg" id="badge-2">
+              <span>2</span>
+              <svg class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
             <div class="flex-1">
-              <label for="family-type" class="block text-sm font-medium text-gray-700 mb-2">Select your military family type</label>
-              <select id="family-type" name="family-type" disabled class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-base focus:ring-2 focus:ring-occp-blue focus:outline-none">
+              <label for="family-type" class="block text-lg font-semibold text-gray-800 mb-3">Select your military family type</label>
+              <select id="family-type" name="family-type" disabled 
+                      class="w-full rounded-lg border-2 border-gray-300 bg-gray-50 px-4 py-3 text-base focus:ring-2 focus:ring-occp-blue focus:border-occp-blue focus:outline-none transition-all disabled:opacity-50">
                 <option value="">-- Select a Family Type --</option>
               </select>
             </div>
           </div>
 
           <!-- Step 3: Sub Family Type -->
-          <div class="flex items-start gap-4">
-            <div class="step-badge bg-occp-light-blue text-occp-blue flex items-center justify-center font-semibold">3</div>
+          <div class="flex items-start gap-6 form-step" id="step-3">
+            <div class="step-badge flex items-center justify-center font-bold text-lg" id="badge-3">
+              <span>3</span>
+              <svg class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
             <div class="flex-1">
-              <label for="sub-family-type" class="block text-sm font-medium text-gray-700 mb-2">Select your specific family situation</label>
-              <select id="sub-family-type" name="sub-family-type" disabled class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 text-base focus:ring-2 focus:ring-occp-blue focus:outline-none">
+              <label for="sub-family-type" class="block text-lg font-semibold text-gray-800 mb-3">Select your specific family situation</label>
+              <select id="sub-family-type" name="sub-family-type" disabled 
+                      class="w-full rounded-lg border-2 border-gray-300 bg-gray-50 px-4 py-3 text-base focus:ring-2 focus:ring-occp-blue focus:border-occp-blue focus:outline-none transition-all disabled:opacity-50">
                 <option value="">-- Select a Situation --</option>
               </select>
             </div>
           </div>
 
           <!-- Step 4: School Age -->
-          <div class="flex items-start gap-4">
-            <div class="step-badge bg-occp-light-blue text-occp-blue flex items-center justify-center font-semibold">4</div>
+          <div class="flex items-start gap-6 form-step" id="step-4">
+            <div class="step-badge flex items-center justify-center font-bold text-lg" id="badge-4">
+              <span>4</span>
+              <svg class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
             <div class="flex-1">
               <fieldset>
-                <legend class="block text-sm font-medium text-gray-700 mb-2">Do you have school-age children (Ages 5–12)?</legend>
-                <div class="flex flex-col sm:flex-row sm:items-center gap-3">
-                  <label class="inline-flex items-center">
-                    <input type="radio" name="school-age" value="Yes" disabled class="h-5 w-5 text-occp-blue focus:ring-occp-blue border-gray-300">
-                    <span class="ml-2 text-gray-700">Yes</span>
+                <legend class="block text-lg font-semibold text-gray-800 mb-4">Do you have school-age children (Ages 5–12)?</legend>
+                <div class="grid grid-cols-2 gap-4">
+                  <label class="relative flex items-center justify-center p-4 border-2 border-gray-300 rounded-xl cursor-pointer hover:border-occp-blue transition-all group">
+                    <input type="radio" name="school-age" value="Yes" disabled class="sr-only">
+                    <div class="text-center">
+                      <div class="w-8 h-8 mx-auto mb-2 rounded-full border-2 border-gray-300 group-hover:border-occp-blue transition-colors flex items-center justify-center">
+                        <div class="w-3 h-3 rounded-full bg-occp-blue opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      </div>
+                      <span class="font-medium text-gray-700">Yes</span>
+                    </div>
                   </label>
-                  <label class="inline-flex items-center">
-                    <input type="radio" name="school-age" value="No" disabled class="h-5 w-5 text-occp-blue focus:ring-occp-blue border-gray-300">
-                    <span class="ml-2 text-gray-700">No</span>
+                  <label class="relative flex items-center justify-center p-4 border-2 border-gray-300 rounded-xl cursor-pointer hover:border-occp-blue transition-all group">
+                    <input type="radio" name="school-age" value="No" disabled class="sr-only">
+                    <div class="text-center">
+                      <div class="w-8 h-8 mx-auto mb-2 rounded-full border-2 border-gray-300 group-hover:border-occp-blue transition-colors flex items-center justify-center">
+                        <div class="w-3 h-3 rounded-full bg-occp-blue opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      </div>
+                      <span class="font-medium text-gray-700">No</span>
+                    </div>
                   </label>
                 </div>
               </fieldset>
@@ -159,16 +329,48 @@
           </div>
 
           <!-- CTA -->
-          <div class="pt-2">
-            <button type="submit" id="calculate-btn" disabled class="w-full inline-flex items-center justify-center gap-3 rounded-full bg-occp-green text-occp-blue px-6 py-4 font-heading font-bold text-lg shadow hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed transition">
-              Calculate Eligibility
+          <div class="pt-4">
+            <button type="submit" id="calculate-btn" disabled class="w-full inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-occp-green to-green-400 text-occp-blue px-8 py-4 font-heading font-bold text-lg shadow-lg hover:shadow-xl hover:from-green-400 hover:to-occp-green disabled:opacity-50 disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400 transition-all transform hover:scale-105 active:scale-95">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              Calculate My Eligibility
             </button>
           </div>
         </form>
       </section>
 
-      <!-- Results -->
-      <section id="eligibility-result" class="min-h-[200px]"></section>
+        <!-- Results Panel -->
+        <section class="bg-white rounded-2xl shadow-xl border border-occp-medium-blue hover-lift">
+          <div class="p-6 sm:p-8">
+            <div id="eligibility-result" class="min-h-[400px]">
+              <!-- Welcome State -->
+              <div id="welcome-state" class="text-center py-12">
+                <div class="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-occp-blue to-blue-600 rounded-full flex items-center justify-center">
+                  <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                  </svg>
+                </div>
+                <h3 class="text-2xl font-heading font-bold text-occp-blue mb-4">Your Eligibility Results</h3>
+                <p class="text-gray-600 mb-6">Complete the form on the left to see which child care programs you may be eligible for.</p>
+                <div class="space-y-3">
+                  <div class="flex items-center justify-between py-2 px-4 bg-gray-50 rounded-lg">
+                    <span class="text-sm font-medium text-gray-600">OCCP Programs</span>
+                    <span class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded">Pending</span>
+                  </div>
+                  <div class="flex items-center justify-between py-2 px-4 bg-gray-50 rounded-lg">
+                    <span class="text-sm font-medium text-gray-600">CDC Programs</span>
+                    <span class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded">Pending</span>
+                  </div>
+                  <div class="flex items-center justify-between py-2 px-4 bg-gray-50 rounded-lg">
+                    <span class="text-sm font-medium text-gray-600">FCC Programs</span>
+                    <span class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded">Pending</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
 
       <!-- Footer (small) -->
@@ -613,11 +815,19 @@
         const form = document.getElementById('eligibility-form');
         const installationSelect = document.getElementById('installation');
         const installationSearch = document.getElementById('installation-search');
+        const installationDropdown = document.getElementById('installation-dropdown');
         const familyTypeSelect = document.getElementById('family-type');
         const subFamilyTypeSelect = document.getElementById('sub-family-type');
         const schoolAgeRadios = document.querySelectorAll('input[name="school-age"]');
         const calculateBtn = document.getElementById('calculate-btn');
         const resultDiv = document.getElementById('eligibility-result');
+        const welcomeState = document.getElementById('welcome-state');
+        const progressFill = document.getElementById('progress-fill');
+        const progressText = document.getElementById('progress-text');
+        
+        let currentStep = 1;
+        let selectedInstallation = '';
+        let filteredInstallations = [];
 
         // Populate initial dropdowns
         const installationOptions = installationsData.map(inst => ({
@@ -652,27 +862,74 @@
             familyTypeSelect.appendChild(option);
         });
 
-        // Form step logic
-        installationSelect.addEventListener('change', () => {
-            if (installationSelect.value) {
+        // Step management functions
+        function updateStep(stepNumber, completed) {
+            const step = document.getElementById(`step-${stepNumber}`);
+            const badge = document.getElementById(`badge-${stepNumber}`);
+            
+            if (completed) {
+                step.classList.add('completed');
+                step.classList.remove('active');
+                badge.classList.add('completed');
+                badge.classList.remove('active');
+                badge.innerHTML = `<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>`;
+            }
+            
+            // Update progress
+            const progress = (stepNumber / 4) * 100;
+            progressFill.style.width = `${progress}%`;
+            progressText.textContent = `Step ${stepNumber} of 4`;
+            currentStep = stepNumber;
+        }
+        
+        function enableStep(stepNumber) {
+            const step = document.getElementById(`step-${stepNumber}`);
+            const badge = document.getElementById(`badge-${stepNumber}`);
+            
+            // Remove active from all steps
+            for (let i = 1; i <= 4; i++) {
+                const s = document.getElementById(`step-${i}`);
+                const b = document.getElementById(`badge-${i}`);
+                s.classList.remove('active');
+                b.classList.remove('active');
+            }
+            
+            // Make current step active
+            step.classList.add('active');
+            badge.classList.add('active');
+            
+            if (stepNumber === 2) {
                 familyTypeSelect.disabled = false;
                 familyTypeSelect.classList.remove('bg-gray-50');
-            } else {
-                familyTypeSelect.disabled = true;
-                familyTypeSelect.classList.add('bg-gray-50');
+            } else if (stepNumber === 3) {
+                subFamilyTypeSelect.disabled = false;
+                subFamilyTypeSelect.classList.remove('bg-gray-50');
+            } else if (stepNumber === 4) {
+                Array.from(schoolAgeRadios).forEach(r => r.disabled = false);
+                updateRadioStyles();
             }
-            subFamilyTypeSelect.innerHTML = '<option value="">-- Select a Situation --</option>';
-            subFamilyTypeSelect.disabled = true;
-            subFamilyTypeSelect.classList.add('bg-gray-50');
-            Array.from(schoolAgeRadios).forEach(r => { r.checked = false; r.disabled = true; });
-            checkFormCompletion();
-        });
+        }
+        
+        function updateRadioStyles() {
+            const radioLabels = document.querySelectorAll('label:has(input[name="school-age"])');
+            radioLabels.forEach(label => {
+                const radio = label.querySelector('input');
+                if (radio.checked) {
+                    label.classList.add('border-occp-blue', 'bg-occp-light-blue');
+                } else {
+                    label.classList.remove('border-occp-blue', 'bg-occp-light-blue');
+                }
+            });
+        }
 
         familyTypeSelect.addEventListener('change', () => {
             const selectedFamilyType = familyTypeSelect.value;
             subFamilyTypeSelect.innerHTML = '<option value="">-- Select a Situation --</option>';
 
             if (selectedFamilyType) {
+                updateStep(2, true);
+                enableStep(3);
+                
                 const relevantSubTypes = subFamilyTypes.filter(st => st.Family_Type === selectedFamilyType);
                 if (relevantSubTypes.length > 0) {
                     relevantSubTypes.forEach(st => {
@@ -681,37 +938,45 @@
                         option.textContent = st.Priority_Type;
                         subFamilyTypeSelect.appendChild(option);
                     });
-                    subFamilyTypeSelect.disabled = false;
-                    subFamilyTypeSelect.classList.remove('bg-gray-50');
-                } else {
-                    subFamilyTypeSelect.disabled = true;
-                    subFamilyTypeSelect.classList.add('bg-gray-50');
                 }
-            } else {
-                subFamilyTypeSelect.disabled = true;
-                subFamilyTypeSelect.classList.add('bg-gray-50');
+                
+                Array.from(schoolAgeRadios).forEach(r => { r.checked = false; r.disabled = true; });
             }
-            Array.from(schoolAgeRadios).forEach(r => { r.checked = false; r.disabled = true; });
             checkFormCompletion();
         });
 
         subFamilyTypeSelect.addEventListener('change', () => {
             if (subFamilyTypeSelect.value) {
-                Array.from(schoolAgeRadios).forEach(r => r.disabled = false);
+                updateStep(3, true);
+                enableStep(4);
             } else {
                 Array.from(schoolAgeRadios).forEach(r => { r.checked = false; r.disabled = true; });
             }
             checkFormCompletion();
         });
         
-        schoolAgeRadios.forEach(radio => radio.addEventListener('change', checkFormCompletion));
+        schoolAgeRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                updateRadioStyles();
+                if (radio.checked) {
+                    updateStep(4, true);
+                }
+                checkFormCompletion();
+            });
+        });
 
         function checkFormCompletion() {
             const schoolAgeSelected = Array.from(schoolAgeRadios).some(r => r.checked);
-            if (installationSelect.value && familyTypeSelect.value && subFamilyTypeSelect.value && schoolAgeSelected) {
-                calculateBtn.disabled = false;
+            const allComplete = installationSelect.value && familyTypeSelect.value && subFamilyTypeSelect.value && schoolAgeSelected;
+            
+            calculateBtn.disabled = !allComplete;
+            
+            if (allComplete) {
+                progressFill.style.width = '100%';
+                progressText.textContent = 'Ready to calculate!';
+                calculateBtn.classList.add('animate-pulse');
             } else {
-                calculateBtn.disabled = true;
+                calculateBtn.classList.remove('animate-pulse');
             }
         }
 
@@ -727,12 +992,18 @@
             const installationRules = installationsData.find(inst => inst.Installation === selectedInstallationName);
             const familyRules = familyTypeEligibility.find(ft => ft.military_family_type === selectedSubFamilyType && ft.school_age === selectedSchoolAge);
 
-            resultDiv.innerHTML = ''; // Clear previous results
-
+            // Hide welcome state
+            welcomeState.style.display = 'none';
+            
             if (!installationRules || !familyRules) {
-                resultDiv.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-                  <h4 class="text-lg font-bold text-red-700">Calculation Error</h4>
-                  <p class="mt-2 text-red-600">We couldn't determine eligibility with the selected options. Try different selections or contact OCCP for assistance.</p>
+                resultDiv.innerHTML = `<div class="text-center py-12">
+                  <div class="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+                    <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                  </div>
+                  <h4 class="text-xl font-heading font-bold text-red-700 mb-2">Calculation Error</h4>
+                  <p class="text-red-600">We couldn't determine eligibility with the selected options.<br>Try different selections or contact OCCP for assistance.</p>
                 </div>`;
                 return;
             }
@@ -749,8 +1020,19 @@
             });
 
             renderResults(finalEligibility);
+            
+            // Update button text
+            calculateBtn.innerHTML = `
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Recalculate
+            `;
+            
             // Smooth scroll to results on mobile/short screens
-            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (window.innerWidth < 1024) {
+                resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         });
 
         function renderResults(eligibility) {
@@ -758,49 +1040,77 @@
             const eligiblePrograms = allProgramKeys.filter(key => eligibility[key] === 'Eligible');
             const ineligiblePrograms = allProgramKeys.filter(key => eligibility[key] !== 'Eligible');
 
-            let html = `<div class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-occp-medium-blue">`;
-            html += `<h3 class="text-2xl font-heading font-bold text-occp-blue mb-4 text-center">Your Eligibility Results</h3>`;
+            let html = '';
+            
+            // Results Header
+            html += `<div class="text-center mb-8">`;
+            html += `<div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-occp-green to-green-400 rounded-full flex items-center justify-center">`;
+            html += `<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`;
+            html += `</div>`;
+            html += `<h3 class="text-2xl font-heading font-bold text-occp-blue mb-2">Your Eligibility Results</h3>`;
+            html += `<p class="text-gray-600">Found ${eligiblePrograms.length} eligible program${eligiblePrograms.length !== 1 ? 's' : ''} for your family</p>`;
+            html += `</div>`;
 
             // Eligible Programs
             if (eligiblePrograms.length > 0) {
-                 html += `<div class="mb-6">`;
-                 html += `<h4 class="text-lg font-bold text-occp-blue mb-3">Eligible Programs</h4>`;
-                 html += `<p class="text-gray-600 mb-4">Based on your selections, you may be eligible for the following programs:</p>`;
-                 html += `<div class="grid gap-4 sm:grid-cols-2">`;
-                 eligiblePrograms.forEach(key => {
+                 html += `<div class="mb-8">`;
+                 html += `<div class="flex items-center justify-between mb-6">`;
+                 html += `<h4 class="text-xl font-heading font-bold text-occp-blue">✅ You May Be Eligible For</h4>`;
+                 html += `<span class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">${eligiblePrograms.length} Programs</span>`;
+                 html += `</div>`;
+                 html += `<div class="grid gap-4">`;
+                 eligiblePrograms.forEach((key, index) => {
                     const program = programInfo[key];
                     html += `
-                        <article class="border border-occp-medium-blue bg-occp-accent rounded-lg p-4 flex flex-col">
-                            <h5 class="font-heading text-base font-bold text-occp-blue">${program.name}</h5>
-                            <p class="text-gray-700 mt-2 text-sm flex-grow">${program.description}</p>
-                            <div class="mt-4 flex flex-wrap gap-2">
-                                ${program.learnMore ? `<a href="${program.learnMore}" target="_blank" class="inline-block text-xs font-semibold border border-occp-blue text-occp-blue px-3 py-2 rounded-full hover:bg-occp-blue hover:text-white transition">Learn More</a>` : ''}
-                                ${program.signUp ? `<a href="${program.signUp}" target="_blank" class="inline-block text-xs font-semibold bg-occp-green text-occp-blue px-3 py-2 rounded-full hover:opacity-95 transition">Sign Up</a>` : ''}
+                        <article class="result-card border-2 border-green-200 bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 hover:shadow-lg transition-all">
+                            <div class="flex items-start gap-4">
+                                <div class="flex-shrink-0 w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                </div>
+                                <div class="flex-1">
+                                    <h5 class="font-heading text-lg font-bold text-green-800 mb-2">${program.name}</h5>
+                                    <p class="text-green-700 mb-4 leading-relaxed">${program.description}</p>
+                                    <div class="flex flex-wrap gap-2">
+                                        ${program.learnMore ? `<a href="${program.learnMore}" target="_blank" class="inline-flex items-center gap-2 text-sm font-semibold bg-white text-green-700 border-2 border-green-200 px-4 py-2 rounded-full hover:bg-green-50 transition-all"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Learn More</a>` : ''}
+                                        ${program.signUp ? `<a href="${program.signUp}" target="_blank" class="inline-flex items-center gap-2 text-sm font-semibold bg-green-600 text-white px-4 py-2 rounded-full hover:bg-green-700 transition-all shadow-md"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg> Apply Now</a>` : ''}
+                                    </div>
+                                </div>
                             </div>
                         </article>
                     `;
                  });
                  html += `</div></div>`;
             } else {
-                html += `<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-                            <h4 class="font-heading font-bold text-yellow-800">No Eligible Programs Found</h4>
-                            <p class="text-yellow-700 mt-2">You may not be eligible based on the selected options. Please contact OCCP for additional assistance.</p>
+                html += `<div class="text-center py-8 mb-8">
+                            <div class="w-16 h-16 mx-auto mb-4 bg-yellow-100 rounded-full flex items-center justify-center">
+                                <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path></svg>
+                            </div>
+                            <h4 class="font-heading text-xl font-bold text-yellow-800 mb-2">No Eligible Programs Found</h4>
+                            <p class="text-yellow-700">Based on your selections, you may not be eligible for these programs.<br>Please contact OCCP for additional assistance and guidance.</p>
                          </div>`;
             }
 
-            // Ineligible Programs
+            // Ineligible Programs (collapsed by default)
             if (ineligiblePrograms.length > 0) {
-                 html += `<div class="mt-4">`;
-                 html += `<h4 class="text-lg font-bold text-gray-700 mb-3">Programs You May Not Be Eligible For</h4>`;
-                 html += `<div class="grid gap-4 sm:grid-cols-2">`;
+                 html += `<div class="border-t border-gray-200 pt-6">`;
+                 html += `<button class="w-full text-left flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('svg').classList.toggle('rotate-180');">`;
+                 html += `<h4 class="text-lg font-semibold text-gray-700">❌ Programs Not Available (${ineligiblePrograms.length})</h4>`;
+                 html += `<svg class="w-5 h-5 text-gray-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>`;
+                 html += `</button>`;
+                 html += `<div class="hidden mt-4 space-y-3">`;
                  ineligiblePrograms.forEach(key => {
                     const program = programInfo[key];
                     html += `
-                        <article class="bg-gray-50 border border-gray-200 rounded-lg p-4 opacity-80">
-                            <h5 class="font-heading text-sm font-bold text-gray-500">${program.name}</h5>
-                            <p class="text-gray-600 mt-2 text-sm">${program.description}</p>
-                            <div class="mt-3">
-                                ${program.learnMore ? `<a href="${program.learnMore}" target="_blank" class="text-xs text-gray-600 font-medium border border-gray-200 px-3 py-2 rounded-full hover:bg-gray-100 transition">Learn More</a>` : ''}
+                        <article class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-8 h-8 bg-gray-400 rounded-full flex items-center justify-center mt-1">
+                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                </div>
+                                <div class="flex-1">
+                                    <h5 class="font-heading text-base font-semibold text-gray-600 mb-1">${program.name}</h5>
+                                    <p class="text-gray-500 text-sm mb-2">${program.description}</p>
+                                    ${program.learnMore ? `<a href="${program.learnMore}" target="_blank" class="inline-flex items-center gap-1 text-xs text-gray-600 font-medium border border-gray-300 px-2 py-1 rounded hover:bg-gray-100 transition"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Learn More</a>` : ''}
+                                </div>
                             </div>
                         </article>
                     `;
@@ -808,7 +1118,8 @@
                  html += `</div></div>`;
             }
 
-            html += `<p class="mt-6 text-xs text-gray-500 text-center"><strong>Disclaimer:</strong> This calculator provides an estimate for informational purposes only and does not guarantee eligibility or assistance. Final eligibility is determined upon official application and verification.</p>`;
+            html += `<div class="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">`;
+            html += `<p class="text-sm text-blue-800 text-center"><strong>📋 Disclaimer:</strong> This calculator provides an estimate for informational purposes only and does not guarantee eligibility or assistance. Final eligibility is determined upon official application and verification.</p>`;
             html += `</div>`;
 
             resultDiv.innerHTML = html;
