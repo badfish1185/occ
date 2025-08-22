@@ -132,6 +132,14 @@
       color: #003366;
     }
     
+    .select-option.highlighted {
+      background: #f3f4f6;
+    }
+    
+    .pointer-events-none {
+      pointer-events: none;
+    }
+    
     /* Card hover effects */
     .hover-lift {
       transition: all 0.3s ease;
@@ -855,12 +863,18 @@
             installationSelect.dispatchEvent(new Event('change'));
         });
 
-        masterFamilyTypes.forEach(type => {
-            const option = document.createElement('option');
-            option.value = type;
-            option.textContent = type;
-            familyTypeSelect.appendChild(option);
-        });
+        // Initialize family types 
+        familyTypeSelect.innerHTML = '<option value="">-- Select a Family Type --</option>';
+        
+        // Populate master family types if they exist
+        if (typeof masterFamilyTypes !== 'undefined') {
+            masterFamilyTypes.forEach(type => {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                familyTypeSelect.appendChild(option);
+            });
+        }
 
         // Step management functions
         function updateStep(stepNumber, completed) {
