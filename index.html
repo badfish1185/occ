@@ -218,9 +218,10 @@
             <div class="flex-1">
               <label for="installation" class="block text-lg font-semibold text-gray-800 mb-3">Select your installation</label>
               <div class="custom-select">
-                <input id="installation-search" type="text" placeholder="Search installations (e.g., Fort Bragg, MacDill AFB...)"
+                <input id="installation-search" list="installation-datalist" type="text" placeholder="Search installations (e.g., Fort Bragg, MacDill AFB...)"
                        class="w-full rounded-lg border-2 border-gray-300 px-4 py-3 text-base focus:ring-2 focus:ring-occp-blue focus:border-occp-blue focus:outline-none transition-all"
                        aria-label="Search installations" />
+                <datalist id="installation-datalist"></datalist>
                 <select id="installation" name="installation"
                         class="w-full mt-2 rounded-lg border-2 border-gray-300 px-4 py-3 text-base focus:ring-2 focus:ring-occp-blue focus:border-occp-blue focus:outline-none transition-all">
                   <option value="">-- Select an Installation --</option>
@@ -803,32 +804,112 @@
             value: inst.Installation,
             label: `${inst.Installation}, ${inst.State}`
         }));
+        // Map label -> installation value for quick lookup (used when a datalist label is chosen)
+        const installationLabelMap = new Map();
+        installationOptions.forEach(opt => installationLabelMap.set(opt.label, opt.value));
 
         function renderInstallationOptions(filter = '') {
+            const filterLower = (filter || '').trim().toLowerCase();
             installationSelect.innerHTML = '<option value="">-- Select an Installation --</option>';
-            installationOptions
-                .filter(opt => opt.label.toLowerCase().includes(filter.toLowerCase()))
-                .forEach(opt => {
-                    const option = document.createElement('option');
-                    option.value = opt.value;
-                    option.textContent = opt.label;
-                    installationSelect.appendChild(option);
-                });
+
+            // keep the datalist in sync for input suggestions
+            const datalist = document.getElementById('installation-datalist');
+            if (datalist) datalist.innerHTML = '';
+
+            const filtered = installationOptions.filter(opt => opt.label.toLowerCase().includes(filterLower));
+            filtered.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt.value;
+                option.textContent = opt.label;
+                installationSelect.appendChild(option);
+
+                if (datalist) {
+                    const dlOption = document.createElement('option');
+                    // datalist option values are the human-friendly label (installation + state)
+                    dlOption.value = opt.label;
+                    datalist.appendChild(dlOption);
+                }
+            });
         }
 
+        // initial render of both select and datalist
         renderInstallationOptions();
 
+        // When typing, update options. Defer exact-label matching slightly to allow datalist selection
+        // to settle in browsers that update the input value after the 'input' event handler runs.
         installationSearch.addEventListener('input', () => {
-            renderInstallationOptions(installationSearch.value);
-            installationSelect.value = '';
-            installationSelect.dispatchEvent(new Event('change'));
+            const val = installationSearch.value || '';
+            renderInstallationOptions(val);
+
+            // Defer attempting to match so that datalist-driven value changes are observed reliably
+            setTimeout(() => {
+                tryMatchInstallationFromInput();
+            }, 0);
         });
+
+        // Pressing Enter picks the first filtered option (helps keyboard users)
+        installationSearch.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const first = installationSelect.querySelector('option:not([value=""])');
+                if (first) {
+                    installationSelect.value = first.value;
+                    // copy the friendly label back into the search input for clarity
+                    installationSearch.value = first.textContent;
+                    // ensure both input and change listeners run on the select
+                    installationSelect.dispatchEvent(new Event('input', { bubbles: true }));
+                    installationSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            }
+        });
+
+        // Some browsers fire 'change' (not 'input') when selecting a datalist option.
+        // Handle 'change' and 'blur' to robustly map the friendly label back to the select.
+        function tryMatchInstallationFromInput() {
+            const val = (installationSearch.value || '').trim();
+            if (!val) {
+                // don't clear the select here — user may be mid-typing
+                return;
+            }
+
+            // 1) Exact label match (e.g., "Fort Bragg, North Carolina")
+            let match = installationOptions.find(opt => opt.label.toLowerCase() === val.toLowerCase());
+            // 2) Exact installation name match (user may type only "Fort Bragg")
+            if (!match) {
+                match = installationOptions.find(opt => opt.value.toLowerCase() === val.toLowerCase());
+            }
+            // 3) If input contains comma, maybe user pasted "Fort Bragg, NC" with slight state variation - try matching by installation prefix
+            if (!match && val.includes(',')) {
+                const prefix = val.split(',')[0].trim().toLowerCase();
+                match = installationOptions.find(opt => opt.label.toLowerCase().startsWith(prefix + ','));
+            }
+
+            if (match) {
+                installationSelect.value = match.value;
+                // keep the friendly label visible in the input
+                installationSearch.value = match.label;
+                installationSelect.dispatchEvent(new Event('change'));
+            }
+            // If no match, do nothing — allow the user to continue typing without the input being cleared.
+        }
+
+        installationSearch.addEventListener('change', tryMatchInstallationFromInput);
+        installationSearch.addEventListener('blur', tryMatchInstallationFromInput);
 
         installationSelect.addEventListener('change', () => {
             if (installationSelect.value) {
+                // Sync the search input text to the friendly label for clarity
+                const selectedLabel = installationSelect.selectedOptions && installationSelect.selectedOptions[0]
+                    ? installationSelect.selectedOptions[0].textContent
+                    : installationSelect.value;
+                installationSearch.value = selectedLabel || '';
+
                 updateStep(1, true);
                 enableStep(2);
             } else {
+                // Clear the search input when no selection
+                installationSearch.value = '';
+
                 const step1 = document.getElementById('step-1');
                 const badge1 = document.getElementById('badge-1');
                 step1.classList.remove('completed');
