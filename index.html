@@ -8,10 +8,18 @@
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Fonts -->
+  <!-- Optimized Fonts with display swap -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+  
+  <!-- Performance optimizations -->
+  <style>
+    /* Critical CSS for above-the-fold content */
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
+    .font-loaded body { font-family: 'Lato', sans-serif; }
+    .font-loaded h1, .font-loaded h2, .font-loaded h3 { font-family: 'Montserrat', sans-serif; }
+  </style>
 
   <script>
     // Tailwind theme customization tuned to match the OCCP site palette
@@ -19,7 +27,8 @@
       theme: {
         extend: {
           colors: {
-            'occp-blue': '#003366',
+            'occp-blue': '#002244',
+            'occp-blue-light': '#003366',
             'occp-green': '#99cc33',
             'occp-light-blue': '#e6f0ff',
             'occp-medium-blue': '#b3d1ff',
@@ -43,6 +52,22 @@
       -moz-osx-font-smoothing: grayscale;
     }
     h1,h2,h3 { font-family: 'Montserrat', sans-serif; }
+    
+    /* Enhanced touch targets for mobile */
+    .touch-target {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    /* Sticky progress bar */
+    .sticky-progress {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #e5e7eb;
+    }
     
     /* Enhanced step badges */
     .step-badge { 
@@ -100,6 +125,55 @@
       position: relative;
     }
     
+    /* Loading states */
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+      position: relative;
+    }
+    
+    .loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      border: 2px solid #99cc33;
+      border-top: 2px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      z-index: 10;
+    }
+    
+    @keyframes spin {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    
+    /* Form validation styles */
+    .invalid {
+      border-color: #ef4444 !important;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+    
+    .valid {
+      border-color: #10b981 !important;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+    
+    .error-message {
+      color: #ef4444;
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
+    
+    .error-message.show {
+      display: block;
+    }
+    
     /* Card hover effects */
     .hover-lift {
       transition: all 0.3s ease;
@@ -131,13 +205,64 @@
     /* Make links open clearly on mobile */
     a[target="_blank"] { text-decoration-skip-ink: auto; }
     
-    /* Responsive improvements */
+    /* Enhanced desktop layout */
     @media (min-width: 1024px) {
       .desktop-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 2rem;
         align-items: start;
+      }
+      
+      .desktop-sidebar {
+        position: sticky;
+        top: 2rem;
+        max-height: calc(100vh - 4rem);
+        overflow-y: auto;
+      }
+      
+      .form-container {
+        min-height: 600px;
+      }
+    }
+    
+    /* Step navigation for desktop */
+    .step-nav {
+      display: none;
+    }
+    
+    @media (min-width: 1024px) {
+      .step-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+      }
+      
+      .step-nav-item {
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+        text-align: left;
+        background: white;
+        color: #374151;
+      }
+      
+      .step-nav-item:hover {
+        background-color: #f3f4f6;
+      }
+      
+      .step-nav-item.active {
+        background-color: #99cc33;
+        color: white;
+        border-color: #7aa329;
+      }
+      
+      .step-nav-item.completed {
+        background-color: #10b981;
+        color: white;
       }
     }
   </style>
@@ -161,7 +286,7 @@
         </nav>
 
         <div class="md:hidden">
-          <button id="menu-btn" class="p-2 rounded-md text-occp-blue focus:outline-none focus:ring-2 focus:ring-occp-blue" aria-label="Open navigation menu">
+          <button id="menu-btn" class="touch-target p-3 rounded-md text-occp-blue focus:outline-none focus:ring-2 focus:ring-occp-blue hover:bg-occp-light-blue transition-colors" aria-label="Open navigation menu">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 5.25h16.5M3.75 12h16.5m-16.5 6.75h16.5" />
             </svg>
@@ -193,9 +318,43 @@
 
       <div class="desktop-grid gap-8">
         <!-- Card: Form -->
-        <section class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-occp-medium-blue hover-lift">
-          <!-- Progress Bar -->
-          <div class="mb-6">
+        <section class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 border border-occp-medium-blue hover-lift form-container">
+          <!-- Desktop Step Navigation -->
+          <div class="step-nav">
+            <button class="step-nav-item active" data-step="1">
+              <div class="font-medium">Step 1: Installation</div>
+              <div class="text-sm opacity-75">Select your military base</div>
+            </button>
+            <button class="step-nav-item" data-step="2">
+              <div class="font-medium">Step 2: Family Type</div>
+              <div class="text-sm opacity-75">Choose your category</div>
+            </button>
+            <button class="step-nav-item" data-step="3">
+              <div class="font-medium">Step 3: Family Details</div>
+              <div class="text-sm opacity-75">Specific situation</div>
+            </button>
+            <button class="step-nav-item" data-step="4">
+              <div class="font-medium">Step 4: School-age Children</div>
+              <div class="text-sm opacity-75">Ages 5-12 years</div>
+            </button>
+          </div>
+          <!-- Sticky Progress Bar for Mobile -->
+          <div class="sticky-progress lg:hidden px-4 py-3 mb-4 -mx-6 -mt-6">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-medium text-occp-blue" id="mobile-progress-text">Step 1 of 4</span>
+              <button id="prev-step" class="touch-target text-occp-blue disabled:text-gray-400 transition-colors" disabled aria-label="Previous step">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+              </button>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" id="mobile-progress-fill" style="width: 25%"></div>
+            </div>
+          </div>
+          
+          <!-- Desktop Progress Bar -->
+          <div class="mb-6 hidden lg:block">
             <div class="flex items-center justify-between mb-2">
               <h3 id="form-heading" class="text-2xl font-heading font-bold text-occp-blue">Eligibility Calculator</h3>
               <span class="text-sm font-medium text-gray-600" id="progress-text">Step 1 of 4</span>
@@ -301,7 +460,7 @@
 
           <!-- CTA -->
           <div class="pt-4">
-            <button type="submit" id="calculate-btn" disabled class="w-full inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-occp-green to-green-400 text-occp-blue px-8 py-4 font-heading font-bold text-lg shadow-lg hover:shadow-xl hover:from-green-400 hover:to-occp-green disabled:opacity-50 disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400 transition-all transform hover:scale-105 active:scale-95">
+            <button type="submit" id="calculate-btn" disabled class="touch-target w-full inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-occp-green to-green-400 text-occp-blue px-8 py-4 font-heading font-bold text-lg shadow-lg hover:shadow-xl hover:from-green-400 hover:to-occp-green disabled:opacity-50 disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400 transition-all transform hover:scale-105 active:scale-95">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
@@ -312,7 +471,7 @@
       </section>
 
         <!-- Results Panel -->
-        <section class="bg-white rounded-2xl shadow-xl border border-occp-medium-blue hover-lift">
+        <section class="bg-white rounded-2xl shadow-xl border border-occp-medium-blue hover-lift desktop-sidebar">
           <div class="p-6 sm:p-8">
             <div id="eligibility-result" class="min-h-[400px]">
               <!-- Welcome State -->
@@ -359,6 +518,115 @@
     menuBtn.addEventListener('click', () => {
       mobileNav.classList.toggle('hidden');
     });
+
+    // Enhanced keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      // Alt + Number keys for step navigation
+      if (e.altKey && e.key >= '1' && e.key <= '4') {
+        e.preventDefault();
+        const stepNum = parseInt(e.key);
+        jumpToStep(stepNum);
+      }
+      
+      // Enter key to proceed to next step
+      if (e.key === 'Enter' && e.target.tagName !== 'BUTTON' && e.target.type !== 'submit') {
+        const currentStep = getCurrentStep();
+        if (currentStep < 4 && isStepComplete(currentStep)) {
+          jumpToStep(currentStep + 1);
+        }
+      }
+      
+      // Tab navigation improvements for radio buttons
+      if (e.key === 'Tab' && e.target.type === 'radio') {
+        const radioGroup = document.querySelectorAll(`input[name="${e.target.name}"]`);
+        const currentIndex = Array.from(radioGroup).indexOf(e.target);
+        
+        if (e.shiftKey && currentIndex > 0) {
+          e.preventDefault();
+          radioGroup[currentIndex - 1].focus();
+        } else if (!e.shiftKey && currentIndex < radioGroup.length - 1) {
+          e.preventDefault();
+          radioGroup[currentIndex + 1].focus();
+        }
+      }
+    });
+
+    // Helper functions for keyboard navigation
+    function getCurrentStep() {
+      if (document.getElementById('step1').classList.contains('active')) return 1;
+      if (document.getElementById('step2').classList.contains('active')) return 2;
+      if (document.getElementById('step3').classList.contains('active')) return 3;
+      if (document.getElementById('step4').classList.contains('active')) return 4;
+      return 1;
+    }
+
+    function isStepComplete(step) {
+      switch (step) {
+        case 1: return document.getElementById('installation').value !== '';
+        case 2: return document.getElementById('family-type').value !== '';
+        case 3: return document.getElementById('sub-family-type').value !== '';
+        case 4: return document.querySelector('input[name="school-age"]:checked') !== null;
+        default: return false;
+      }
+    }
+
+    function jumpToStep(stepNum) {
+      const stepNavItems = document.querySelectorAll('.step-nav-item');
+      stepNavItems.forEach((item, index) => {
+        item.classList.remove('active', 'completed');
+        if (index + 1 === stepNum) {
+          item.classList.add('active');
+        } else if (index + 1 < stepNum) {
+          item.classList.add('completed');
+        }
+      });
+
+      // Show appropriate form step
+      document.querySelectorAll('.form-step').forEach((step, index) => {
+        step.classList.remove('active');
+        if (index + 1 === stepNum) {
+          step.classList.add('active');
+        }
+      });
+
+      // Update progress
+      const progress = (stepNum / 4) * 100;
+      document.getElementById('progress-fill').style.width = `${progress}%`;
+      document.getElementById('mobile-progress-fill').style.width = `${progress}%`;
+      document.getElementById('progress-text').textContent = `Step ${stepNum} of 4`;
+      document.getElementById('mobile-progress-text').textContent = `Step ${stepNum} of 4`;
+    }
+
+    // Font loading optimization
+    if ('fonts' in document) {
+      document.fonts.ready.then(() => {
+        document.documentElement.classList.add('font-loaded');
+      });
+    } else {
+      // Fallback for older browsers
+      setTimeout(() => {
+        document.documentElement.classList.add('font-loaded');
+      }, 3000);
+    }
+
+    // Performance: Intersection Observer for lazy loading
+    if ('IntersectionObserver' in window) {
+      const lazyElements = document.querySelectorAll('[data-lazy]');
+      const lazyObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const element = entry.target;
+            element.classList.remove('opacity-0');
+            element.classList.add('opacity-100');
+            lazyObserver.unobserve(element);
+          }
+        });
+      });
+
+      lazyElements.forEach(element => {
+        lazyObserver.observe(element);
+      });
+    }
 
     // --- DATA FROM SPREADSHEETS ---
     // This data is now the full dataset from the provided files.
